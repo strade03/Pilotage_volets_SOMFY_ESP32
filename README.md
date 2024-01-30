@@ -33,4 +33,4 @@ Pour vérifier que l'ESP32 est bien en fonction, vous pouvez appuyer sur le bout
 # Mise en oeuvre 
 ## Plan de montage 
 
-![Schema de montage ESP32](https://github.com/strade03/Pilotage_volets_SOMFY_ESP32/assets/97481110/80414e86-afd1-43a4-80e3-684eb8bb4fe4)
+![Schema de montage ESP32](/images/Schema_de_montage_ESP32.jpg)
