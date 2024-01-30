@@ -1,3 +1,7 @@
+La base du projet provient :
+https://github.com/Tahitibob35/roller-shutter
+Des améliorations et adaptations concernent principalement les paramètrages Wifi, IP et comptes.
+
 # Volet roulant
 Volet roulant Somfy piloté par un ESP32
 

@@ -1,8 +1,0 @@
-ATTENTION emetteur brochage => DATA 5V MAsse, le 5V est bien au milieu...
-
-Attention
-PASSWORD_LENGTH dans prefs.h est a 20 ce qui peut être trop court. Il est préférable de mettre 28 voir 32 
-
-
-
-Résistance pour LED =220 R R Marron
