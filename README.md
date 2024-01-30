@@ -5,6 +5,7 @@ Des améliorations et adaptations concernent principalement les paramètrages Wi
 # Volet roulant
 Volet roulant Somfy piloté par un ESP32
 
+# Utilisation
 ## Démarrage 
 
 Pendant la phase de d'initialisation la LED reste allumée. Elle s'éteindra en mode normal ou clignotera en mode secours.
@@ -29,7 +30,7 @@ Pour vérifier que l'ESP32 est bien en fonction, vous pouvez appuyer sur le bout
 
 * Page de l'application URL : http://X.X.X.X => X.X.X.X sera l'adresse attribuée par DHCP ou choisie dans les paramètrages.
 
-## 
+# Mise en oeuvre 
+## Plan de montage 
 
-
-
+![Schema de montage ESP32](https://github.com/strade03/Pilotage_volets_SOMFY_ESP32/assets/97481110/80414e86-afd1-43a4-80e3-684eb8bb4fe4)
