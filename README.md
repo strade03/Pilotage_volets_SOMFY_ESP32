@@ -5,7 +5,7 @@ Des améliorations et adaptations concernent principalement les paramétrages Wi
 
 # Pilotage Volets roulants système RTS
 
-Volet roulant Somfy RTS piloté par un ESP32.
+Volets roulants Somfy RTS pilotés par un ESP32.
 (Ne fonctionne pas avec la technologie io de Somfy.) 
 
 # Utilisation
@@ -14,7 +14,7 @@ Volet roulant Somfy RTS piloté par un ESP32.
 Pendant la phase de d'initialisation la LED reste allumée. Elle s'éteindra en mode normal ou clignotera en mode secours.
 
 
-## Première utilisation ou mode rescue
+## Première utilisation ou mode secours
 
 L'ESP32 démarre en mode secours en tant que point d'accès s'il ne peut pas se connecter à une borne Wifi, la LED clignote pour indiquer le mode secours. 
 
@@ -31,14 +31,14 @@ Identifiant et Mot de passe par défaut : pas de mot de passe et d'identifiant e
 Sur une télécommande déjà associée à un volet roulant, appuyez 3 secondes sur le bouton "Prog" à l'arrière. Le volet va descendre et monter.
 A partir de la page Attacher du menu de configuration, choisir le volet que vous voulez piloter, le volet va descendre et monter, l'association est terminée.
 
->Si jamais vous vouliez annuler l'association, répéter l'opération, la télécommande virtuelle ne sera liée au volet.
+>Si jamais vous vouliez annuler l'association, répéter l'opération, la télécommande virtuelle ne sera plus liée au volet.
 >Vous pouvez associer plusieurs volets à une télécommande virtuelle il suffit de répéter l'opération pour chacun des volets en choisissant la même commande virtuelle.
 >Ainsi, avec un clic vous pouvez piloter plusieurs volets !
 
 
 ## Mode normal
 
->Pour passer en mode secours quand il est en mode normal, appuyer sur le bouton 5 sec la LED clignote pour indiquer le mode secours.
+>Pour passer en mode secours quand il est en mode normal, appuyer sur le bouton 5 sec la LED clignote pour indiquer le basculement en mode secours.
 
 >Pour vérifier que l'ESP32 est bien en fonction, vous pouvez appuyer sur le bouton la LED s'allumera.
 Si l'identification est activée dans les paramètres, il faudra se loguer pour se connecter.
@@ -47,6 +47,9 @@ Si l'identification est activée dans les paramètres, il faudra se loguer pour 
 
 Pour accéder au module de l'extérieur du réseau vous devrez sur votre box rediriger un port sur IP port 80 du module. 
 A partir d'une freebox vous avez également la possibilité d'obtenir un nom de domaine pour plus de facilité.
+
+**Attention, la recherche des points borne Wifi est effectuée au demarrage de l'ESP32.**
+> Si vous ne voyez pas votre borne tenter de le redemarrer ou saisir à la main les informations.
 
 # Mise en oeuvre 
 ## Matériel 
