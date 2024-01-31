@@ -80,7 +80,6 @@ L'électronique a été réalisé sur des cartes de prototypage ce qui permet de
 * Electronique
 
 ![bouton](/images/boite/electronique1.jpg)
-
 ![emetteur](/images/boite/electronique2.jpg)
 
 * Voici la réalisation dans sa boite, le fichier 3D est disponible.
