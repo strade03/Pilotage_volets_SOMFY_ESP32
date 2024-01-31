@@ -4,7 +4,6 @@ https://github.com/Tahitibob35/roller-shutter
 Des améliorations et adaptations concernent principalement les paramètrages Wifi, IP, comptes et gestion des programmes.
 
 # Pilotage Volets roulants système RTS
-================================
 
 Volet roulant Somfy RTS piloté par un ESP32.
 (Ne fonctionne pas avec la technologie io de Somfy.) 
