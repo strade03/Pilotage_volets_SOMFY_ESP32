@@ -56,4 +56,6 @@ RF433 module
 
 ## Plan de montage 
 
+Remplacer l'oscillateur du module rf433 par celui en 433.42Mhz.
+
 ![Schema de montage ESP32](/images/Schema_de_montage_ESP32.jpg)
