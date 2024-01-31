@@ -45,12 +45,15 @@ Si l'identification est activée dans les paramètres, il faudra se logguer pour
 # Mise en oeuvre 
 ## Matériel 
 ESP32
-![ESP32](/images/esp32.jpg)
+
+![ESP32](/images/esp32.png)
 
 RF433 module
+
 ![RF433](/images/rf433-module.jpg)
 
 433.42MHz oscillateur
+
 ![oscillateur](/images/oscillator.jpg)
 
 
