@@ -1,7 +1,7 @@
 La base du projet provient :
 https://github.com/Tahitibob35/roller-shutter
 
-Des améliorations et adaptations concernent principalement les paramètrages Wifi, IP, comptes et gestion des programmes.
+Des améliorations et adaptations concernent principalement les paramétrages Wifi, IP, comptes et gestion des programmes.
 
 # Pilotage Volets roulants système RTS
 
@@ -14,7 +14,7 @@ Volet roulant Somfy RTS piloté par un ESP32.
 Pendant la phase de d'initialisation la LED reste allumée. Elle s'éteindra en mode normal ou clignotera en mode secours.
 
 
-## Premiere utilisation ou mode rescue
+## Première utilisation ou mode rescue
 
 L'ESP32 démarre en mode secours en tant que point d'accès s'il ne peut pas se connecter à une borne Wifi, la LED clignote pour indiquer le mode secours. 
 
@@ -22,7 +22,7 @@ L'ESP32 démarre en mode secours en tant que point d'accès s'il ne peut pas se 
 
 * Configuration URL : http://10.10.10.1
 
-Identifiant et Mot de passe par defaut : pas de mot de passe et d'identifiant en mode rescue. 
+Identifiant et Mot de passe par défaut : pas de mot de passe et d'identifiant en mode secours. 
 
 
 ## Associer les télécommandes virtuelles aux volets
@@ -41,9 +41,12 @@ A partir de la page Attacher du menu de configuration, choisir le volet que vous
 >Pour passer en mode secours quand il est en mode normal, appuyer sur le bouton 5 sec la LED clignote pour indiquer le mode secours.
 
 >Pour vérifier que l'ESP32 est bien en fonction, vous pouvez appuyer sur le bouton la LED s'allumera.
-Si l'identification est activée dans les paramètres, il faudra se logguer pour se connecter.
+Si l'identification est activée dans les paramètres, il faudra se loguer pour se connecter.
 
-* Page de l'application URL : http://X.X.X.X => X.X.X.X sera l'adresse attribuée par DHCP ou choisie dans les paramètrages.
+* Page de l'application URL : http://X.X.X.X => X.X.X.X sera l'adresse attribuée par DHCP ou choisie dans les paramétrages.
+
+Pour accéder au module de l'extérieur du réseau vous devrez sur votre box rediriger un port sur IP port 80 du module. 
+A partir d'une freebox vous avez également la possibilité d'obtenir un nom de domaine pour plus de facilité.
 
 # Mise en oeuvre 
 ## Matériel 
@@ -72,7 +75,7 @@ Remplacer l'oscillateur du module rf433 par celui en 433.42Mhz.
 
 # Produit fini 
 
-L'electronique a été réalisé sur des cartes de prototypage ce qui permet de réduire l'encombrement.
+L'électronique a été réalisé sur des cartes de prototypage ce qui permet de réduire l'encombrement.
 
 Voici la réalisation dans sa boite, le fichier 3D est disponible.
 
