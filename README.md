@@ -8,7 +8,7 @@ Des améliorations et adaptations concernent principalement les paramétrages Wi
 Volets roulants Somfy RTS pilotés par un ESP32.
 (Ne fonctionne pas avec la technologie io de Somfy.) 
 
-# Utilisation
+# **Utilisation**
 ## Démarrage 
 
 Pendant la phase de d'initialisation la LED reste allumée. Elle s'éteindra en mode normal ou clignotera en mode secours.
@@ -51,7 +51,7 @@ A partir d'une freebox vous avez également la possibilité d'obtenir un nom de 
 **Attention, la recherche des points borne Wifi est effectuée au demarrage de l'ESP32.**
 > Si vous ne voyez pas votre borne tenter de le redemarrer ou saisir à la main les informations.
 
-# Mise en oeuvre 
+# **Mise en oeuvre** 
 ## Matériel 
 ESP32
 
