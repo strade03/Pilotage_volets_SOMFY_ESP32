@@ -48,7 +48,7 @@ Si l'identification est activée dans les paramètres, il faudra se loguer pour 
 Pour accéder au module de l'extérieur du réseau vous devrez sur votre box rediriger un port sur IP port 80 du module. 
 A partir d'une freebox vous avez également la possibilité d'obtenir un nom de domaine pour plus de facilité.
 
-**Attention, la recherche des points borne Wifi est effectuée au demarrage de l'ESP32.**
+**Attention, la recherche des bornes Wifi est effectuée au demarrage de l'ESP32.**
 > Si vous ne voyez pas votre borne tenter de le redemarrer ou saisir à la main les informations.
 
 # **Mise en oeuvre** 
