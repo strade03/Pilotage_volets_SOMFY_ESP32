@@ -12,8 +12,8 @@
 
 #include "rs_wifi.h"
 
-// TODO : V2 => sur la page commandes faire un script d'action pour eviter de recharger la page. Faire 2 commandes groupe et individuelle
-// Faire un tableau permettant de trier l'affichage des télécommandes 
+// TODO : V2 => sur la page commandes faire un script d'action pour eviter de recharger la page. Faire 2 commandes groupe et individuelle ?
+// FAire la gestion des noms et création des volets pour ne pas avoir à le gérer à la compilation (vars.h)
 
 
 char key[10];
@@ -45,7 +45,7 @@ void identification(AsyncWebServerRequest *request) {
   char admin_id[PASSWORD_LENGTH];
   prefs_get("admin","identifiant",admin_id,PASSWORD_LENGTH,"admin");
   boolean admin_actif=prefs_get_bool("admin","active",false);
-  if (admin_actif==true)
+  if ((admin_actif==true) and (!rescue_mode))
     if(!request->authenticate(admin_id,admin_mdp))
         return request->requestAuthentication();
 }
