@@ -26,6 +26,7 @@ Identifiant et Mot de passe par defaut : pas de mot de passe et d'identifiant en
 
 ## Associer les télécommandes virtuelles aux volets
 ![Telecommande](/images/telecommande.jpg)
+
 Sur une télécommande déjà associée à un volet roulant, appuyez 3 secondes sur le bouton "Prog" à l'arrière. Le volet va descendre et monter.
 A partir de la page Attacher du menu de configuration, choisir le volet que vous voulez piloter, le volet va descendre et monter, l'association est terminée.
 
@@ -45,10 +46,13 @@ Si l'identification est activée dans les paramètres, il faudra se logguer pour
 ## Matériel 
 ESP32
 ![ESP32](/images/esp32.jpg)
+
 RF433 module
 ![RF433](/images/rf433-module.jpg)
+
 433.42MHz oscillateur
 ![oscillateur](/images/oscillator.jpg)
+
 
 ## Plan de montage 
 
