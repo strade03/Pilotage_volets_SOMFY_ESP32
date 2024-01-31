@@ -59,6 +59,9 @@ RF433 module
 
 ![oscillateur](/images/oscillator.jpg)
 
+Antenne (longueur quart d'onde 17cm env.)
+
+![antenne](/images/antenne.jpg)
 
 ## Plan de montage 
 
@@ -67,8 +70,18 @@ Remplacer l'oscillateur du module rf433 par celui en 433.42Mhz.
 ![Schema de montage ESP32](/images/Schema_de_montage_ESP32.jpg)
 
 
-# Boite 
+# Produit fini 
 
 L'electronique a été réalisé sur des cartes de prototypage ce qui permet de réduire l'encombrement.
 
 Voici la réalisation dans sa boite, le fichier 3D est disponible.
+
+![boite](/images/boite/boite1.jpg)
+
+![boite](/images/boite/boite2.jpg)
+
+![boite](/images/boite/boite3.jpg)
+
+![boite](/images/boite/boite4.jpg)
+
+![boite](/images/boite/boite5.jpg)
