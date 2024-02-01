@@ -12,15 +12,9 @@
 
 #include "rs_wifi.h"
 
-// TODO : V2 => sur la page commandes faire un script d'action pour eviter de recharger la page. Faire 2 commandes groupe et individuelle ?
-// FAire la gestion des noms et création des volets pour ne pas avoir à le gérer à la compilation (vars.h)
-
-
 char key[10];
-char token[16]; // Token to validate API calls
+char token[16]; // Token pour valider l'appel de l'API
 
-// #include <WebServer.h>
-// WebServer server(80);
 AsyncWebServer server(80);
 extern prgm_t prgms[PRGM_COUNT];
 
