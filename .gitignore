@@ -6,5 +6,6 @@
 .vscode/ipch
 ./src/vars.h
 a_lire.txt
-./src/SomfyRTS.cpp
+
 TODO.txt
+src/SomfyRTS.cpp
