@@ -97,3 +97,14 @@ L'électronique a été réalisé sur des cartes de prototypage ce qui permet de
 ![boite](/images/boite/boite4.jpg)
 
 ![boite](/images/boite/boite5.jpg)
+
+# Compilation
+
+* vars.h 
+
+Renommer le fichier vars-exemple.h en vars.h
+renseigner le fichier en nommant vos télécommandes et définir l'ordre d'affichage.
+
+* SomfyRTS.cpp
+
+ligne 11 vous pouvez changer la valeur _RTS_address pour avoir une adresse unique pour vos commandes. 
