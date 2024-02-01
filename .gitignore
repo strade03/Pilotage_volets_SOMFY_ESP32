@@ -4,7 +4,7 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
-src/vars.h
+./src/vars.h
 a_lire.txt
-SomfyRTS.cpp
+./src/SomfyRTS.cpp
 TODO.txt
