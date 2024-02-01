@@ -1076,10 +1076,8 @@ void handleClock(AsyncWebServerRequest *request) {
 }
 
 
-
-
 //------------------------------------------------------------------------------------------------------------------------------------
-// Fonction execution des commandes
+// Fonction API 
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleApi(AsyncWebServerRequest *request) {
     identification(request);
