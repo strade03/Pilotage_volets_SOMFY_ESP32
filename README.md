@@ -53,6 +53,17 @@ A partir d'une freebox vous avez également la possibilité d'obtenir un nom de 
 **Attention, la recherche des bornes Wifi est effectuée au demarrage de l'ESP32.**
 > Si vous ne voyez pas votre borne tenter de le redemarrer ou saisir à la main les informations.
 
+## API 
+
+> Il est possible d'utliser l'API si un token est défini dans la page de configuration Options avancées
+Exemple d'appel :
+http://X.X.X.X/api?roller=3&command=0&token=1234
+
+roller : numéro de la télécommande virtuelle 0 étant la première
+command : 0 ferme, 1 ouvre, 2 arrête
+token : valeur du token
+
+
 # **Mise en oeuvre** 
 ## Matériel 
 ESP32

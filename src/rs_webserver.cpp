@@ -1077,13 +1077,13 @@ void handleClock(AsyncWebServerRequest *request) {
 
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Fonction API 
+// Fonction API si un token n'est pas défini dans la page de configuration l'API n'est pas accéssible
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleApi(AsyncWebServerRequest *request) {
     identification(request);
     write_output_ln("WEBSERVER - handleAPI - Execution commande");
 
-  if (request->hasArg("roller") && request->hasArg("command") && request->hasArg("token")) {
+  if (request->hasArg("roller") && request->hasArg("command") && request->hasArg("token") && token!="") {
     String roller_str = request->arg("roller");
     String command_str = request->arg("command");
     String token_str = request->arg("token");
