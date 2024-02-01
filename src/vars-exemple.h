@@ -1,3 +1,4 @@
+//*************************** RENOMER ce fichier en var.h
 // Exemple de fichier vars.h 
 #ifndef VARS_H_
 #define VARS_H_
