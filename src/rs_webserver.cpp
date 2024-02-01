@@ -914,9 +914,9 @@ void handleApplication(AsyncWebServerRequest *request) {
 
   if (request->method() == HTTP_POST) {
     if(request->hasArg("key")){
-      String key = request->arg("key");
-      write_output_ln("WEBSERVER - handleApplication - Storing key : " + key);
-      prefs_set_key(key);
+      String key_new = request->arg("key");
+      write_output_ln("WEBSERVER - handleApplication - Storing key : " + key_new);
+      prefs_set_key(key_new);
     }
 
     if(request->hasArg("token")){
@@ -1081,9 +1081,15 @@ void handleClock(AsyncWebServerRequest *request) {
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleApi(AsyncWebServerRequest *request) {
     identification(request);
+    prefs_get_token(token);
     write_output_ln("WEBSERVER - handleAPI - Execution commande");
 
-  if (request->hasArg("roller") && request->hasArg("command") && request->hasArg("token") && token!="") {
+  if (strlen(token)==0) {
+    write_output_ln("WEBSERVER - handleAPI - token no define");
+    request->send(401);
+  }
+  else
+  if (request->hasArg("roller") && request->hasArg("command") && request->hasArg("token")) {
     String roller_str = request->arg("roller");
     String command_str = request->arg("command");
     String token_str = request->arg("token");
@@ -1174,10 +1180,10 @@ void ws_config(int rescue_mode) {
   else {
     strcpy(key, "");
     prefs_get_key(key);
-    write_output_ln("Loaded application key: " + String(key));
-    prefs_get_token(token);
-    write_output_ln("Loaded API token: ###########");
-    write_output_ln("Loaded API token: " + String(token));
+    // write_output_ln("Loaded application key: " + String(key));
+    // prefs_get_token(token);
+    // write_output_ln("Loaded API token: ###########");
+    // write_output_ln("Loaded API token: " + String(token));
   }
   char url[40];
 
