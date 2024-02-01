@@ -108,3 +108,4 @@ renseigner le fichier en nommant vos télécommandes et définir l'ordre d'affic
 * SomfyRTS.cpp
 
 ligne 11 vous pouvez changer la valeur _RTS_address pour avoir une adresse unique pour vos commandes. 
+
