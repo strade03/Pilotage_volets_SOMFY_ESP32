@@ -120,3 +120,12 @@ renseigner le fichier en nommant vos télécommandes et définir l'ordre d'affic
 
 ligne 11 vous pouvez changer la valeur _RTS_address pour avoir une adresse unique pour vos commandes. 
 
+## Capture d'écran
+
+![Accueil](/images/captures/home.jpg)
+
+![telecommandes](/images/captures/telecommandes.jpg)
+
+![programmes](/images/captures/programmes.jpg)
+
+![configuration](/images/captures/configuration.jpg)
