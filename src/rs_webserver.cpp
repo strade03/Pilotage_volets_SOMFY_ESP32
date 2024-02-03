@@ -80,28 +80,61 @@ void handleMain(AsyncWebServerRequest *request) {
   String page;
   page = HEADER ;
   if (internet_ok==true)
-      page= page + STYLE_w3 + HEADER_close;
+      page= page + STYLE_w3 + STYLE_Meteo + HEADER_close;
     else
-      page= page + STYLE_w3_light + HEADER_close;
+      page= page + STYLE_w3_light + STYLE_Meteo + HEADER_close;
   
   //if (rescue_mode==1) {
   page+=R"rawliteral(<header class="w3-container w3-card w3-theme">
   <h1>Gestion Volets Roulants</h1>
   </header>
-  <div class="w3-container">
+  <div class="w3-container" style="margin-bottom:50px">
   <br/>
   <a href="command" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Télécommandes</a><br/>
   <a href="prgmlist" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Programmation</a><br/>
   <br/>
   <a href="config" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Configurer</a><br/>  
-  </div>
   )rawliteral";
+
+    char sunrise[12] = "";
+    prefs_get("meteo","sunrise",sunrise,12,"");
+    char sunset[12] = "";
+    prefs_get("meteo","sunset",sunset,12,"");
+    
+    extern String   temperature;
+    extern String  pressure;
+    extern String  humidity;
+    extern String  visibility;
+    extern String   win_speed;
+    extern String  win_deg;
+    extern String icon;
+    
+    String lever;
+    String coucher;
+    if (heure_soleil("coucher")<10) coucher= "0" + String(heure_soleil("coucher")); else coucher=String(heure_soleil("coucher"));
+    if (minute_soleil("coucher")<10) coucher+= ":0" + String(minute_soleil("coucher")); else coucher+=":"+String(minute_soleil("coucher"));
+    if (heure_soleil("lever")<10) lever= "0" + String(heure_soleil("lever")); else lever=String(heure_soleil("lever"));
+    if (minute_soleil("lever")<10) lever+= ":0" + String(minute_soleil("lever")); else lever+=":"+String(minute_soleil("lever"));
+
+
+  page += R"rawliteral(<table class="w3-table meteo">
+  <tr><td class="w3-theme w3-card"> 
+  <img src=")rawliteral";
+  page+="https://openweathermap.org/img/wn/"+icon+"@2x.png\" alt=\"meteo\">";
+  page += " "+ temperature+"°</td>\
+    <td class=\"w3-theme w3-card\">Vent<br>"+win_speed+ "m/s<br>"+getWindDirection(win_deg.toFloat())+"</td>\
+    </tr><tr><td class=\"w3-theme w3-card\">Visibilité<br>"+visibility+"m </td>\
+    <td class=\"w3-theme w3-card\">Humidité<br>"+humidity+"% </td></tr>\
+    <tr><td class=\"w3-theme w3-card\"><br>Soleil<br> lever: "+ lever +"<br>coucher: "+ coucher +"</td>\
+    <td class=\"w3-theme w3-card\">Pression<br>"+pressure+"hPa</td></tr></table>";
+  page += "</div>";
+
   uint8_t hour=0;
   uint8_t minute=0;
   uint8_t seconde=0;
   gettime(&hour, &minute);
   
-  page += R"rawliteral(<footer class="w3-container w3-teal w3-xlarge w3-theme w3-display-bottommiddle" style="width: 100%;">
+  page += R"rawliteral(<footer class="w3-container w3-teal w3-xlarge w3-theme w3-display-bottommiddle" style="width:100%; position:fixed; bottom:0">
   <div class="w3-row">
     <div class="w3-half w3-left-align">
       Heure ESP32 : )rawliteral";
@@ -145,14 +178,15 @@ void handleConfig(AsyncWebServerRequest *request) {
   </header>
   <div class="w3-container"> 
   <br/>
-  <a href="attach" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Attacher</a><br/>
-  <a href="wifi" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Wifi</a><br/>
-  <a href="reseau" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Réseau</a><br/>
-  <a href="securite" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Sécurité</a><br/>
-  <a href="application" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Options avancées</a>  <br/>
-  <a href="clock" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Heure</a><br/><br/>
+  <a href="attach" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Attacher</a><br>
+  <a href="wifi" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Wifi</a><br>
+  <a href="reseau" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Réseau</a><br>
+  <a href="securite" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Sécurité</a><br>
+  <a href="clock" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Heure</a><br>
+  <a href="application" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Options avancées</a><br>
+  <br>
   <a href="\" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Retour</a><br/>
-  <a href="reboot" class="w3-button w3-red w3-xxlarge w3-round-large w3-block"><b>Reboot</b></a><br/>
+  <a href="reboot" class="w3-button w3-red w3-xxlarge w3-round-large w3-block"><b>Reboot</b></a><br>
   )rawliteral";
   //}
   page+=  FOOTER;
@@ -418,9 +452,18 @@ void handlePrgmAdd(AsyncWebServerRequest *request) {
         page+="\">";
         page+=String(remote_name[remote_order[i]]);
         page+="</option>";
-        //response->printf("<option value=\"%d\">%s</option>", remote_order[i], remote_name[remote_order[i]]);
     }
-// // Heures/minutes
+
+    page+="</select><br/><br/>\
+        <select class=\"w3-select w3-xxlarge\" id=\"command\" name=\"command\">\
+        <option value=\"\" disabled selected>Commande</option>\
+        <option value=\"0\">Fermer</option>\
+        <option value=\"1\">Ouvrir</option>\
+        <option value=\"2\">Fermer au coucher du soleil</option>\
+        <option value=\"3\">Ouvrir au lever du soleil</option>\
+      </select>";
+    
+    // Heures/minutes
     page+="</select><br/><br/>\
     <select class=\"w3-select w3-xxlarge\" id=\"hour\" name=\"hour\">\
     <option value=\"\" disabled selected>Heures</option>";
@@ -444,18 +487,13 @@ void handlePrgmAdd(AsyncWebServerRequest *request) {
             page+="</option>\"";
     }
           
-    page+="</select><br/><br/>\
-            <select class=\"w3-select w3-xxlarge\" id=\"command\" name=\"command\">\
-            <option value=\"\" disabled selected>Commande</option>\
-            <option value=\"0\">Fermer</option>\
-            <option value=\"1\">Ouvrir</option>\
-          </select>\
-          </div><br/>\
+    page+="</div><br/>\
           <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
         </form><br/>\
         <a href=\"prgmlist\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>\
     </a>\
-    <br/></div>";
+    <br/>";
+    page+="<i>Si l'heure de lever ou coucher de soleil inconnue, l'heure indiquée sera utilisée</i></div>";
     page+=FOOTER;
     request->send(200, "text/html", page);
   }
@@ -527,9 +565,26 @@ void handlePrgmUpdate(AsyncWebServerRequest *request) {
           page+="\">";
         page+=String(remote_name[remote_order[i]]);
         page+="</option>";
-        //response->printf("<option value=\"%d\">%s</option>", i, remote_name[remote_order[i]]);
     }
-// // Heures/minutes
+
+    page+="</select><br/><br/>\
+        <select class=\"w3-select w3-xxlarge\" id=\"command\" name=\"command\">\
+        <option value=\"\" disabled>Commande</option>\
+        <option value=\"0\"";
+    if (command==0) page+=" selected ";
+    page+=">Fermer</option>\
+            <option value=\"1\"";
+    if (command==1) page+=" selected ";            
+    page+=">Ouvrir</option>\
+            <option value=\"2\"";
+    if (command==2) page+=" selected ";            
+    page+=">Fermer au coucher du soleil</option>\
+            <option value=\"3\"";
+    if (command==3) page+=" selected ";            
+    page+=">Ouvrir au lever du soleil</option>\
+            </select>";
+
+    // Heures/minutes
     page+="</select><br/><br/>\
     <select class=\"w3-select w3-xxlarge\" id=\"hour\" name=\"hour\">\
     <option value=\"\" disabled>Heures</option>";
@@ -559,22 +614,13 @@ void handlePrgmUpdate(AsyncWebServerRequest *request) {
             page+="</option>\"";
     }
           
-    page+="</select><br/><br/>\
-            <select class=\"w3-select w3-xxlarge\" id=\"command\" name=\"command\">\
-            <option value=\"\" disabled>Commande</option>\
-            <option value=\"0\"";
-    if (command==0) page+=" selected ";
-    page+=">Fermer</option>\
-            <option value=\"1\"";
-    if (command==1) page+=" selected ";            
-    page+=">Ouvrir</option>\
-          </select>\
-          </div><br/>\
+    page+="</div><br/>\
           <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
         </form><br/>\
         <a href=\"prgmlist\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>\
     </a>\
-    <br/></div>";
+    <br/>";
+    page+="<i>Si l'heure de lever ou coucher de soleil inconnue, l'heure indiquée sera utilisée</i></div>";
     page+=FOOTER;
     request->send(200, "text/html", page);
   }
@@ -949,11 +995,6 @@ void handleApplication(AsyncWebServerRequest *request) {
       prefs_set_syslog_port(syslog_port.toInt());
     }
 
-    if(request->hasArg("ntp_server")){
-      String ntp_server = request->arg("ntp_server");
-      write_output_ln("WEBSERVER - handleApplication - Storing ntp_server : " + ntp_server);
-      prefs_set_ntp_server(ntp_server);
-    }
 
     redirect(request, (char*)"/config");
     return;
@@ -972,10 +1013,7 @@ void handleApplication(AsyncWebServerRequest *request) {
     syslog_state = prefs_get_syslog_state();
     prefs_get_syslog_ip(syslog_ip);
     syslog_port = prefs_get_syslog_port();
-
-    char ntp_server[NTP_SERVER_LENGTH];
-    prefs_get_ntp_server(ntp_server);
-
+    
     String page;
     page = HEADER ;
     if (internet_ok==true)
@@ -988,18 +1026,15 @@ void handleApplication(AsyncWebServerRequest *request) {
 </header>\
 <div class=\"w3-container\">\
 <form action=\"application\" method=\"post\">\
-<p>\
-  <label class=\"w3-text-teal w3-xxlarge\" for=\"ntp_server\"><b>NTP serveur (Heure)</b></label><br/>\
-  <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" type=\"text\" id=\"ntp_server\" name=\"ntp_server\" value=\""+ntp_server+"\"><br/>\
-<p>\
+  <p>\
   <label class=\"w3-text-teal w3-xxlarge\"><b>Cl&eacute; obfuscation</b></label>\
   <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"key\" name=\"key\" type=\"text\" value=\""+key_str+"\"></p>\
 <p>\
-<p>\
-  <label class=\"w3-text-teal w3-xxlarge\"><b>Token pour API</b></label>\
+<hr>\
+  <label class=\"w3-text-teal w3-xxlarge\"><b>Token accéder à l'API</b></label>\
   <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"token\" name=\"token\" type=\"text\" value=\""+token+"\"></p>\
 <p>\
-<p>\
+<hr>\
   <label class=\"w3-text-teal w3-xxlarge\" for=\"fname\"><b>Activer syslog externe</b></label><br/>\
   <input type=\"radio\" id=\"syslog_state\" name=\"syslog_state\" value=\"yes\""+ (String)(syslog_state ? "checked" : " ") +">\
   <label class=\"w3-text-teal w3-xxlarge\" for=\"yes\">Oui</label><br/>\
@@ -1031,19 +1066,64 @@ void handleClock(AsyncWebServerRequest *request) {
   write_output_ln("WEBSERVER - handleClock - Serving clock page");
 
   if (request->method() == HTTP_POST) {
+
+  for (uint8_t i = 0; i < request->args(); i++) {
+    String argName = request->argName(i); // nom de l'argument
+    String argValue = request->arg(i);   // valeur de l'argument
+    Serial.println("Argument " + argName + " : " + argValue);
+  }
+
+    if(request->hasArg("ntp_server")){
+      String ntp_server = request->arg("ntp_server");
+      write_output_ln("WEBSERVER - handleApplication - Storing ntp_server : " + ntp_server);
+      prefs_set_ntp_server(ntp_server);
+      inittime();
+    }
+
+    if(request->hasArg("openweathermap_api")){
+      String openweathermap_api_new = request->arg("openweathermap_api");
+      write_output_ln("WEBSERVER - handleApplication - Storing openweathermap_api : " + openweathermap_api_new);
+      prefs_set("openweathermap","api",openweathermap_api_new);
+    }
+
+    if(request->hasArg("longitude")){
+      String lon_new = request->arg("longitude");
+      write_output_ln("WEBSERVER - handleApplication - Storing longitude : " + lon_new);
+      prefs_set("openweathermap","lon",lon_new);
+    }
+
+    if(request->hasArg("latitude")){
+      String lat_new = request->arg("latitude");
+      write_output_ln("WEBSERVER - handleApplication - Storing latitude : " + lat_new);
+      prefs_set("openweathermap","lat",lat_new);
+    }
+
+    // A voir pour le faire si on le demande 
     String hours = request->arg("hours");
     String minutes = request->arg("minutes");
-    settime(hours.toInt(), minutes.toInt());
+    if (hours!="" && minutes!="")
+      settime(hours.toInt(), minutes.toInt());
+
+
     redirect(request, (char*)"/config");
     return;
-
   }
 
   if (request->method() == HTTP_GET) {
     uint8_t hours=0;
     uint8_t minutes=0;
- //   gettime(&hours, &minutes); // Plantage
-    // Serial.println(hours);
+
+    
+    char ntp_server[NTP_SERVER_LENGTH];
+    prefs_get_ntp_server(ntp_server);
+
+    char openweathermap_api[50];
+    char lon[10]="";
+    char lat[10]="";
+    prefs_get("openweathermap","api",openweathermap_api,50,"");
+    prefs_get("openweathermap","lon",lon,9,"2.3333");
+    prefs_get("openweathermap","lat",lat,9,"48.8666");
+ 
     String page;
 
     page = HEADER ;
@@ -1057,7 +1137,26 @@ void handleClock(AsyncWebServerRequest *request) {
             </header>\
             <div class=\"w3-container\">\
             <form action=\"clock\" method=\"post\">\
+            <label class=\"w3-text-teal w3-xxlarge\" for=\"ntp_server\"><b>NTP serveur (Heure)</b></label><br/>\
+            <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" type=\"text\" id=\"ntp_server\" name=\"ntp_server\" value=\""+ntp_server+"\"><br/>\
             <p>\
+            <label class=\"w3-text-teal w3-xxlarge\" for=\"openweathermap_api\"><b>Clé API openweathermap (lever et coucher soleil)</b></label><br/>\
+            <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" type=\"text\" id=\"openweathermap_api\" name=\"openweathermap_api\" value=\""+openweathermap_api+"\"><br/>\
+<div class=\"w3-row\">\
+    <div class=\"w3-half\">\
+      <label class=\"w3-text-teal w3-xxlarge\" for=\"longitude\">Longitude</label><br/>\
+      <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" type=\"text\" id=\"longitude\" name=\"longitude\" value=\""+lon+"\"><br/>\
+    </div>\
+    <div class=\"w3-half\">\
+      <label class=\"w3-text-teal w3-xxlarge\" for=\"latitude\">Latitute</label><br/>\
+      <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" type=\"text\" id=\"latitude\" name=\"latitude\" value=\""+lat+"\"><br/>\
+    </div>\
+  </div>\
+            <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
+            </form>\
+            <hr>\
+            <p>\
+            <form action=\"clock\" method=\"post\">\
             <label class=\"w3-text-teal w3-xxlarge\"><b>Heures</b></label>\
             <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"hours\" name=\"hours\" type=\"text\" value=\""+hours+"\"></p>\
             <p>\
@@ -1065,7 +1164,7 @@ void handleClock(AsyncWebServerRequest *request) {
             <label class=\"w3-text-teal w3-xxlarge\"><b>Minutes</b></label>\
             <input class=\"w3-input w3-border w3-light-grey w3-xxlarge \" id=\"minutes\" name=\"minutes\" type=\"text\" value=\""+minutes+"\"></p>\
             <p>\
-            <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
+            <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Ajuster l'heure\">\
             </form>\
             <br/>\
             <a href=\"config\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>";
@@ -1162,6 +1261,12 @@ void getcommandname(uint8_t command, char * name) {
       break;
     case 1 :
       strcpy(name, "Ouvrir");
+      break;      
+    case 2 :
+      strcpy(name, "Fermer &#9728;");
+      break;
+    case 3 :
+      strcpy(name, "Ouvrir &#9728;");
       break;
   }
 }

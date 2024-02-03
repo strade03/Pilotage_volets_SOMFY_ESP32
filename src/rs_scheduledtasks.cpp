@@ -20,6 +20,8 @@ Task wifiBlinkTask(1 * TASK_SECOND, TASK_FOREVER, &wifiLEDOn, &runner, false);
 Task TXLEDTask(1 * TASK_SECOND, TASK_FOREVER, &TXLEDOff, &runner, false);
 // Ajustement de l'heure une fois par jour
 Task initTimeTask(24 * TASK_HOUR, TASK_FOREVER, &inittimeTask, &runner, false);
+// Lecture de la méteo toutes les heures
+Task initMeteoTask( TASK_HOUR, TASK_FOREVER, &initmeteoTask, &runner, false);
 
 
 void checkTriggerProgram(){
@@ -60,6 +62,17 @@ void enable_initTimeTask(void) {
 
 void disable_initTimeTask(void) {
   initTimeTask.disable();
+}
+
+void initmeteoTask(void) {
+  get_meteo();
+}
+void enable_initMeteoTask(void) {
+  initMeteoTask.enable();
+}
+
+void disable_initMeteoTask(void) {
+  initMeteoTask.disable();
 }
 
 void enable_checkWifiTask(void) {

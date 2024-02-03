@@ -15,8 +15,8 @@ const long interval = 2000;
 unsigned long previousMillis = 0;
 extern bool time_set;
 bool wifi_connected;
-uint8_t previous_hour = 0;
-uint8_t previous_minute = 0;
+// uint8_t previous_hour = 0;
+// uint8_t previous_minute = 0;
 
 
 void setup() {
@@ -31,13 +31,9 @@ void setup() {
   // Serial.println(cpuSpeed);
 
   pinMode(RESCUE_PIN, INPUT_PULLUP);
-
   pinMode(STATUS_LED_PIN, OUTPUT);
-  // pinMode(TX_LED_PIN, OUTPUT);
-
   digitalWrite(STATUS_LED_PIN, HIGH);
-  // digitalWrite(TX_LED_PIN, HIGH);
-
+  
   rescue_mode=(connect_to_wifi()==true)?0:1;   
 
   if (rescue_mode) {
@@ -46,22 +42,24 @@ void setup() {
   }
   else {
     scanner_reseau();
+    internet_ok=check_internet();
+    Serial.print("Etat internet : ");
+    Serial.println(internet_ok);
     setup_syslog();         // Recuperation des parametres pour syslog sur serveur externe si parametre
     // enable_checkWifiTask(); // TODO A REMETTRE ? si pas de connection reboot donc perte du temps ! // parametrage de la Task qui appelera check_wifi fonction qui test via ping 8.8.8.8 et renseigne la variable failingWifi = 0 si ok sinon retente la connexion puis reboot en cas d'echec
-    internet_ok=check_internet();
     if (inittime()) {       // Mise à l'heure
       digitalWrite(STATUS_LED_PIN, LOW);
       time_set = true;
       enable_initTimeTask(); // initialise de temps en temps l'heure
-    }
+    } 
+    if (get_meteo()) // Lecture de la meteo et heure de lever et coucher du soleil
+      enable_initMeteoTask(); 
   }
   
   ws_config(rescue_mode); // Configuration initialisation générale avec les liens des pages => fonctions
   
   prefs_loadprgms(); // charge programmes 
   refresh_programTask(); // lance les taches des programmes  
-
-  // digitalWrite(TX_LED_PIN, LOW);
 
   write_output_ln("End setup function");
 }

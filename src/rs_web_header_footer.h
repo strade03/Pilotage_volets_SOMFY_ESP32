@@ -48,6 +48,51 @@ char STYLE_Commande[]=R"rawliteral(<style>
 </style>
 </head><body>)rawliteral";
 
+char STYLE_Meteo[]=R"rawliteral(<style>
+.meteo {
+  box-shadow: 8px 8px 15px 0px rgba(0,0,0,0.75);
+  border-radius: 30px!important;
+}
+.meteo tr td {
+  text-align:center;
+  vertical-align: middle;
+  padding-top: 8px!important;
+  padding-bottom: 8px!important;
+}
+.meteo tr td:nth-child(1) {
+  padding-left: 35px!important;
+  padding-right: 30px!important;
+}
+.meteo tr td:nth-of-type(2) {
+  padding-left: 30px!important;
+  padding-right: 35px!important;
+} 
+.meteo tr:last-child td {
+  padding-bottom: 28px!important;
+}
+.meteo tr:last-child td:first-child {
+border-radius: 0 0 0 30px!important;
+}
+.meteo tr:first-child td:first-child {
+border-radius: 30px 0px 0 0px!important;
+}
+.meteo tr:last-child td:last-child {
+border-radius: 0 0 30px 0!important;
+}
+.meteo tr:first-child td:last-child {
+border-radius: 0 30px 0 0!important;
+}
+@media only screen and (max-width:600px){
+    .w3-table tr td:nth-child(n+2)  {width:20px;}
+    .w3-table tr td:nth-child(n+2) span {font-size:35px;}
+    .w3-table tr td:first-child h1 {font-size:20px;white-space: nowrap;}
+    .w3-xxlarge {font-size:24px!important};
+  }
+@media only screen and (min-width:900px){
+  .w3-table {width: auto;margin: 0px auto;}
+}
+</style>
+</head><body>)rawliteral";
 char STYLE_Programme[]="<script>\
 function c(l,prg){\
     /*let button_enr = document.getElementById('enregistre'); let button_new = document.getElementById('new'); \
@@ -253,6 +298,7 @@ hr{border:0;border-top:1px solid #eee;margin:20px 0}
 .w3-text-teal,.w3-hover-text-teal:hover{color:#009688!important}
 .w3-border-teal,.w3-hover-border-teal:hover{border-color:#009688!important}
 .w3-table tr td:nth-child(n+2) span {font-size: 40px;}
+.w3-display-topmiddle{position:absolute;left:50%;top:0;transform:translate(-50%,0%);-ms-transform:translate(-50%,0%)}
 }
 </style>)rawliteral";
 

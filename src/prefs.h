@@ -38,4 +38,5 @@ uint16_t prefs_get_prgmcount();
 void prefs_set_prgmcount(int prgmcount);
 void prefs_loadprgms(void);
 void prefs_storeprgms(void);
+
 #endif //PREFS_H_
