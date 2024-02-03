@@ -122,7 +122,7 @@ void handleMain(AsyncWebServerRequest *request) {
   <img src=")rawliteral";
   page+="https://openweathermap.org/img/wn/"+icon+"@2x.png\" alt=\"meteo\">";
   page += " "+ temperature+"°</td>\
-    <td class=\"w3-theme w3-card\">Vent<br>"+win_speed+ "m/s<br>"+getWindDirection(win_deg.toFloat())+"</td>\
+    <td class=\"w3-theme w3-card\">Vent<br>"+win_speed+ "m/s<br>&#129517;&nbsp;<b>"+getWindDirection(win_deg.toFloat())+"</b></td>\
     </tr><tr><td class=\"w3-theme w3-card\">Visibilité<br>"+visibility+"m </td>\
     <td class=\"w3-theme w3-card\">Humidité<br>"+humidity+"% </td></tr>\
     <tr><td class=\"w3-theme w3-card\"><br>Soleil<br> lever: "+ lever +"<br>coucher: "+ coucher +"</td>\
@@ -178,7 +178,7 @@ void handleConfig(AsyncWebServerRequest *request) {
   </header>
   <div class="w3-container"> 
   <br/>
-  <a href="attach" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Attacher</a><br>
+  <a href="attach" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Appairer télécommande</a><br>
   <a href="wifi" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Wifi</a><br>
   <a href="reseau" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Réseau</a><br>
   <a href="securite" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Sécurité</a><br>
@@ -995,11 +995,11 @@ void handleApplication(AsyncWebServerRequest *request) {
 <div class=\"w3-container\">\
 <form action=\"application\" method=\"post\">\
   <p>\
-  <label class=\"w3-text-teal w3-xxlarge\"><b>Cl&eacute; obfuscation</b></label>\
+  <label class=\"w3-text-teal w3-xxlarge\"><b>Cl&eacute; obfuscation des requêtes</b></label>\
   <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"key\" name=\"key\" type=\"text\" value=\""+key_str+"\"></p>\
 <p>\
 <hr>\
-  <label class=\"w3-text-teal w3-xxlarge\"><b>Token accéder à l'API</b></label>\
+  <label class=\"w3-text-teal w3-xxlarge\"><b>Token d'accéder à l'API</b></label>\
   <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"token\" name=\"token\" type=\"text\" value=\""+token+"\"></p>\
 <br>\
 <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
