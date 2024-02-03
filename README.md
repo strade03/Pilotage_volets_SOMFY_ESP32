@@ -1,3 +1,7 @@
+img[src*='#center'] {
+    display: block;
+    margin: auto;
+}
 La base du projet provient :
 https://github.com/Tahitibob35/roller-shutter
 
