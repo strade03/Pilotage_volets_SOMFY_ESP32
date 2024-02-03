@@ -1,12 +1,13 @@
 <!-- language-all: lang-html -->
-img[src*='#center'] {
-    display: block;
-    margin: auto;
-}
+
 La base du projet provient :
 https://github.com/Tahitibob35/roller-shutter
 
 Des améliorations et adaptations concernent principalement les paramétrages Wifi, IP, comptes et gestion des programmes (lever coucher du soleil).
+
+<p align="center" width="100%">
+    <img  src="/images/by-nc-sa.png"> 
+</p>
 
 ![Licence CC BY-NC-SA](/images/by-nc-sa.png#center)
 
