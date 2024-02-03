@@ -1,7 +1,7 @@
 La base du projet provient :
 https://github.com/Tahitibob35/roller-shutter
 
-Des améliorations et adaptations concernent principalement les paramétrages Wifi, IP, comptes et gestion des programmes.
+Des améliorations et adaptations concernent principalement les paramétrages Wifi, IP, comptes et gestion des programmes (lever coucher du soleil).
 
 ![Licence CC BY-NC-SA](/images/by-nc-sa.png)
 
