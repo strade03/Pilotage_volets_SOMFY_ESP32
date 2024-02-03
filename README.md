@@ -1,3 +1,4 @@
+<!-- language-all: lang-html -->
 img[src*='#center'] {
     display: block;
     margin: auto;
