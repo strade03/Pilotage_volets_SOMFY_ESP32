@@ -3,7 +3,7 @@ https://github.com/Tahitibob35/roller-shutter
 
 Des améliorations et adaptations concernent principalement les paramétrages Wifi, IP, comptes et gestion des programmes (lever coucher du soleil).
 
-![Licence CC BY-NC-SA](/images/by-nc-sa.png)
+![Licence CC BY-NC-SA](/images/by-nc-sa.png#center)
 
 # Pilotage Volets roulants système RTS
 
@@ -28,7 +28,7 @@ Identifiant et Mot de passe par défaut : pas de mot de passe et d'identifiant e
 
 
 ## Associer les télécommandes virtuelles aux volets
-![Telecommande](/images/telecommande.jpg)
+![Telecommande](/images/telecommande.jpg#center)
 
 Sur une télécommande déjà associée à un volet roulant, appuyez 3 secondes sur le bouton "Prog" à l'arrière. Le volet va descendre et monter.
 A partir de la page Attacher du menu de configuration, choisir le volet que vous voulez piloter, le volet va descendre et monter, l'association est terminée.
@@ -122,10 +122,10 @@ ligne 11 vous pouvez changer la valeur _RTS_address pour avoir une adresse uniqu
 
 # Captures d'écran
 
-![Accueil](/images/captures/home.jpg)
+![Accueil](/images/captures/home.jpg#center)
 
-![telecommandes](/images/captures/telecommandes.jpg)
+![telecommandes](/images/captures/telecommandes.jpg#center)
 
-![programmes](/images/captures/programmes.jpg)
+![programmes](/images/captures/programmes.jpg#center)
 
-![configuration](/images/captures/configuration.jpg)
+![configuration](/images/captures/configuration.jpg#center)
