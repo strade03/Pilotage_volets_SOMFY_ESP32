@@ -971,31 +971,6 @@ void handleApplication(AsyncWebServerRequest *request) {
       prefs_set_token(token_arg);
     }
 
-    if(request->hasArg("syslog_state")){
-      String syslog_state = request->arg("syslog_state");
-      write_output_ln("WEBSERVER - handleApplication - Storing syslog_state : " + syslog_state);
-      if(syslog_state.compareTo("yes") == 0){
-        // syslog_state == "yes"
-        prefs_set_syslog_state(true);
-      }else{
-        // syslog_state != "yes
-        prefs_set_syslog_state(false);
-      }
-    }
-
-    if(request->hasArg("syslog_ip") ){
-      String syslog_ip = request->arg("syslog_ip");
-      write_output_ln("WEBSERVER - handleApplication - Storing syslog_ip : " + syslog_ip);
-      prefs_set_syslog_ip(syslog_ip);
-    }
-
-    if(request->hasArg("syslog_port")){
-      String syslog_port = request->arg("syslog_port");
-      write_output_ln("WEBSERVER - handleApplication - Storing syslog_port : " + syslog_port);
-      prefs_set_syslog_port(syslog_port.toInt());
-    }
-
-
     redirect(request, (char*)"/config");
     return;
   }
@@ -1006,13 +981,6 @@ void handleApplication(AsyncWebServerRequest *request) {
     char key_str[KEY_LENGTH];
     prefs_get_key(key_str);
     prefs_get_token(token);
-
-    boolean syslog_state = false;
-    char syslog_ip[IP_LENGTH];
-    int16_t syslog_port;
-    syslog_state = prefs_get_syslog_state();
-    prefs_get_syslog_ip(syslog_ip);
-    syslog_port = prefs_get_syslog_port();
     
     String page;
     page = HEADER ;
@@ -1033,18 +1001,7 @@ void handleApplication(AsyncWebServerRequest *request) {
 <hr>\
   <label class=\"w3-text-teal w3-xxlarge\"><b>Token accéder à l'API</b></label>\
   <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"token\" name=\"token\" type=\"text\" value=\""+token+"\"></p>\
-<p>\
-<hr>\
-  <label class=\"w3-text-teal w3-xxlarge\" for=\"fname\"><b>Activer syslog externe</b></label><br/>\
-  <input type=\"radio\" id=\"syslog_state\" name=\"syslog_state\" value=\"yes\""+ (String)(syslog_state ? "checked" : " ") +">\
-  <label class=\"w3-text-teal w3-xxlarge\" for=\"yes\">Oui</label><br/>\
-  <input type=\"radio\" id=\"syslog_state\" name=\"syslog_state\" value=\"no\" "+ (String)(syslog_state ? " " : "checked")+">\
-  <label class=\"w3-text-teal w3-xxlarge\" for=\"no\">Non</label><br/>\
-  <label for=\"syslog_ip\">Syslog serveur IP:</label><br/>\
-  <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" type=\"text\" id=\"syslog_ip\" name=\"syslog_ip\" value=\""+syslog_ip+"\"><br/>\
-  <label for=\"syslog_port\">Syslog serveur port:</label><br/>\
-  <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" type=\"text\" id=\"syslog_port\" name=\"syslog_port\" value=\""+syslog_port+"\"><br/>\
-</p>\
+<br>\
 <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
 </form>\
 <br/>\

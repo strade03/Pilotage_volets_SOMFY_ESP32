@@ -6,7 +6,6 @@
 #define VERSION "V1.0"
 
 void write_output_ln(String message);
-void setup_syslog();
 void wifiblink(void);
 void moveup(int roller);
 void movedown(int roller);

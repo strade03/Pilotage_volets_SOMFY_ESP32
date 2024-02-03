@@ -45,7 +45,7 @@ void setup() {
     internet_ok=check_internet();
     Serial.print("Etat internet : ");
     Serial.println(internet_ok);
-    setup_syslog();         // Recuperation des parametres pour syslog sur serveur externe si parametre
+    
     // enable_checkWifiTask(); // TODO A REMETTRE ? si pas de connection reboot donc perte du temps ! // parametrage de la Task qui appelera check_wifi fonction qui test via ping 8.8.8.8 et renseigne la variable failingWifi = 0 si ok sinon retente la connexion puis reboot en cas d'echec
     if (inittime()) {       // Mise à l'heure
       digitalWrite(STATUS_LED_PIN, LOW);
