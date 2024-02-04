@@ -86,9 +86,8 @@ border-radius: 0 30px 0 0!important;
     .w3-table tr td:nth-child(n+2)  {width:20px;}
     .w3-table tr td:nth-child(n+2) span {font-size:35px;}
     .w3-table tr td:first-child h1 {font-size:20px;white-space: nowrap;}
-    .w3-xxlarge {font-size:24px!important};
   }
-@media only screen and (min-width:900px){
+@media only screen and (min-width:200px){
   .w3-table {width: auto;margin: 0px auto;}
 }
 </style>
@@ -299,11 +298,13 @@ hr{border:0;border-top:1px solid #eee;margin:20px 0}
 .w3-border-teal,.w3-hover-border-teal:hover{border-color:#009688!important}
 .w3-table tr td:nth-child(n+2) span {font-size: 40px;}
 .w3-display-topmiddle{position:absolute;left:50%;top:0;transform:translate(-50%,0%);-ms-transform:translate(-50%,0%)}
+@media only screen and (max-width:600px){.w3-xxlarge {font-size:24px!important};}
 }
 </style>)rawliteral";
 
 char STYLE_w3[]="<link rel=\"stylesheet\" href=\"https://www.w3schools.com/w3css/4/w3.css\">\
- <link rel=\"stylesheet\" href=\"https://www.w3schools.com/lib/w3-theme-green.css\">";
+ <link rel=\"stylesheet\" href=\"https://www.w3schools.com/lib/w3-theme-green.css\">\
+ <style>@media only screen and (max-width:600px){.w3-xxlarge {font-size:24px!important};}</style>";
 
 // // Trop lourd !
 // char STYLE_w3_toolg[] = "<style>\

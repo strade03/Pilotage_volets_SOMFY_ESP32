@@ -95,7 +95,7 @@ void handleMain(AsyncWebServerRequest *request) {
   <br/>
   <a href="config" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Configurer</a><br/>  
   )rawliteral";
-
+  if (!rescue_mode){
     char sunrise[12] = "";
     prefs_get("meteo","sunrise",sunrise,12,"");
     char sunset[12] = "";
@@ -120,13 +120,15 @@ void handleMain(AsyncWebServerRequest *request) {
   page += R"rawliteral(<table class="w3-table meteo">
   <tr><td class="w3-theme w3-card"> 
   <img src=")rawliteral";
-  page+="https://openweathermap.org/img/wn/"+icon+"@2x.png\" alt=\"meteo\">";
-  page += " "+ temperature+"°</td>\
-    <td class=\"w3-theme w3-card\">Vent<br>"+win_speed+ "m/s<br>&#129517;&nbsp;<b>"+getWindDirection(win_deg.toFloat())+"</b></td>\
+  page+="https://openweathermap.org/img/wn/"+icon+".png\" alt=\"meteo\">";
+  // page+="https://openweathermap.org/img/wn/"+icon+"@2x.png\" alt=\"meteo\">"; // Icone plus grande
+  page += "&#x1F321;&nbsp;"+ temperature+"°</td>\
+    <td class=\"w3-theme w3-card\">&#x1F4A8;&nbsp;"+win_speed+ "m/s<br>&#129517;&nbsp;<b>"+getWindDirection(win_deg.toFloat())+"</b></td>\
     </tr><tr><td class=\"w3-theme w3-card\">Visibilité<br>"+visibility+"m </td>\
     <td class=\"w3-theme w3-card\">Humidité<br>"+humidity+"% </td></tr>\
-    <tr><td class=\"w3-theme w3-card\"><br>Soleil<br> lever: "+ lever +"<br>coucher: "+ coucher +"</td>\
+    <tr><td class=\"w3-theme w3-card\">&#x1F506; lever: "+ lever +"<br>&#x1F506; coucher: "+ coucher +"</td>\
     <td class=\"w3-theme w3-card\">Pression<br>"+pressure+"hPa</td></tr></table>";
+  }
   page += "</div>";
 
   uint8_t hour=0;
