@@ -44,3 +44,37 @@ void stop(int roller) {
   TXLEDOnfor1s();
   somfy.stop(roller);  
 }
+
+/// Controle de l'espace mémoire
+// Fonction pour obtenir la taille de la RAM
+int getTotalRam() {
+  return ESP.getHeapSize();
+}
+
+// Fonction pour obtenir la RAM libre
+int getFreeRam() {
+  return ESP.getFreeHeap();
+}
+
+// Fonction pour obtenir la taille de la mémoire flash
+int getTotalFlash() {
+  return ESP.getFlashChipSize();
+}
+
+// Fonction pour obtenir la mémoire flash libre
+int getFreeFlash() {
+  return ESP.getFreeSketchSpace();
+}
+
+// Fonction pour obtenir Vitesse du CPU
+int getCpuFrequency() {
+  return getCpuFrequencyMhz();
+}
+
+// Fonction pour regler Vitesse du CPU
+void setCpuFrequency(int f) {
+  setCpuFrequencyMhz(f);
+}
+
+
+  

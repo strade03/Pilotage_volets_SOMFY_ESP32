@@ -23,7 +23,6 @@ Task initTimeTask(24 * TASK_HOUR, TASK_FOREVER, &inittimeTask, &runner, false);
 // Lecture de la méteo toutes les heures
 Task initMeteoTask( TASK_HOUR, TASK_FOREVER, &initmeteoTask, &runner, false);
 
-
 void checkTriggerProgram(){
 
   write_output_ln("Main - checkTriggerProgram - Start");

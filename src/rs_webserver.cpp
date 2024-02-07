@@ -1,3 +1,4 @@
+#include "esp_task_wdt.h"
 #include "vars.h"
 #include "ESPAsyncWebServer.h"
 
@@ -21,6 +22,9 @@ extern prgm_t prgms[PRGM_COUNT];
 extern int rescue_mode;
 extern bool internet_ok;
 
+extern bool time_set;
+
+extern String Liste_reseau;
 //------------------------------------------------------------------------------------------------------------------------------------
 // Page non trouvée => erreur 404
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -70,6 +74,35 @@ String htmlEntities(String str, bool whitespace) {
   // str.replace("=": "&#x3D;");
 return str;
 }
+
+//------------------------------------------------------------------------------------------------------------------------------------
+// Footer avec heure, état internet et usage mémoire
+//------------------------------------------------------------------------------------------------------------------------------------
+String baspage(){
+  // if ((!rescue_mode) && (time_set==true)){
+  if (!rescue_mode) {
+  uint8_t hour=0;
+  uint8_t minute=0;
+  String page;
+  gettime(&hour, &minute);
+  page += R"rawliteral(<footer class="w3-container w3-teal w3-xlarge w3-theme w3-display-bottommiddle" style="width:100%; position:fixed; bottom:0; display: flex; justify-content: space-between;">
+    <div class="w3-half w3-left-align">
+      Heure ESP32 : )rawliteral";
+  page+= timeToStr(hour,minute);
+  page += R"rawliteral(</div>
+    <div class="w3-half w3-center">)rawliteral";
+    page +="<small>Free RAM: "+ String((100*getFreeRam()/getTotalRam()))+"%"+" Flash: "+String((100*getFreeFlash()/getTotalFlash()))+"% CPU: "+String(getCpuFrequency())+"</small>";
+    page += R"rawliteral(</div>
+    <div class="w3-half w3-right-align">
+      Etat Internet <span class="w3-circle  )rawliteral";
+  page+=(internet_ok==false)?"w3-red ":"w3-teal ";
+  page+=R"rawliteral(w3-large" id="etatConnexion">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    </div></footer>)rawliteral";
+  return(page);
+  }
+  return("");
+}
+
 //------------------------------------------------------------------------------------------------------------------------------------
 // Page Menu d'accueil
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -109,52 +142,26 @@ void handleMain(AsyncWebServerRequest *request) {
     extern String  win_deg;
     extern String icon;
     
-    String lever;
-    String coucher;
-    if (heure_soleil("coucher")<10) coucher= "0" + String(heure_soleil("coucher")); else coucher=String(heure_soleil("coucher"));
-    if (minute_soleil("coucher")<10) coucher+= ":0" + String(minute_soleil("coucher")); else coucher+=":"+String(minute_soleil("coucher"));
-    if (heure_soleil("lever")<10) lever= "0" + String(heure_soleil("lever")); else lever=String(heure_soleil("lever"));
-    if (minute_soleil("lever")<10) lever+= ":0" + String(minute_soleil("lever")); else lever+=":"+String(minute_soleil("lever"));
-
-
   page += R"rawliteral(<table class="w3-table meteo">
   <tr><td class="w3-theme w3-card"> 
   <img src=")rawliteral";
   page+="https://openweathermap.org/img/wn/"+icon+".png\" alt=\"meteo\">";
   // page+="https://openweathermap.org/img/wn/"+icon+"@2x.png\" alt=\"meteo\">"; // Icone plus grande
-  page += "&#x1F321;&nbsp;"+ temperature+"°</td>\
-    <td class=\"w3-theme w3-card\">&#x1F4A8;&nbsp;"+win_speed+ "m/s<br>&#129517;&nbsp;<b>"+getWindDirection(win_deg.toFloat())+"</b></td>\
-    </tr><tr><td class=\"w3-theme w3-card\">Visibilité<br>"+visibility+"m </td>\
-    <td class=\"w3-theme w3-card\">Humidité<br>"+humidity+"% </td></tr>\
-    <tr><td class=\"w3-theme w3-card\">&#x1F506; lever: "+ lever +"<br>&#x1F506; coucher: "+ coucher +"</td>\
-    <td class=\"w3-theme w3-card\">Pression<br>"+pressure+"hPa</td></tr></table>";
+  page += "&#x1F321;&nbsp;"+ temperature+"<small>°</small></td>\
+    <td class=\"w3-theme w3-card\">&#x1F4A8;&nbsp;"+win_speed+ "<small>m/s</small><br>&#129517;&nbsp;<b>"+getWindDirection(win_deg.toFloat())+"</b></td>\
+    </tr><tr><td class=\"w3-theme w3-card\">Pression<br>"+pressure+"<small>hPa</small></td>\
+    <td class=\"w3-theme w3-card\">Humidité<br>"+humidity+"<small>%</small> </td></tr>\
+    <tr><td class=\"w3-theme w3-card\">&#x1F506; lever: "+ timeToStr("lever") +"<br>&#x1F506; coucher: "+ timeToStr("coucher") +"</td>\
+    <td class=\"w3-theme w3-card\">&#x2606 nuit: "+ timeToStr("nuit")+" </td></tr></table>";
+
+  page += "</td></tr></table>";
   }
   page += "</div>";
 
-  uint8_t hour=0;
-  uint8_t minute=0;
-  uint8_t seconde=0;
-  gettime(&hour, &minute);
-  
-  page += R"rawliteral(<footer class="w3-container w3-teal w3-xlarge w3-theme w3-display-bottommiddle" style="width:100%; position:fixed; bottom:0">
-  <div class="w3-row">
-    <div class="w3-half w3-left-align">
-      Heure ESP32 : )rawliteral";
-  String hourStr = String(hour); if (hourStr.length() < 2) hourStr = "0" + hourStr;
-  String minuteStr = String(minute); if (minuteStr.length() < 2) minuteStr = "0" + minuteStr;
-  page+= String(hourStr) + ":" + String(minuteStr);
-  page += R"rawliteral(</div>
-    <div class="w3-half w3-right-align">
-      Etat Internet <span class="w3-circle  )rawliteral";
-  page+=(internet_ok==false)?"w3-red ":"w3-teal ";
-  page+=R"rawliteral(w3-large" id="etatConnexion">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-    </div>
-  </div>
-</footer>
-</body></html>
-)rawliteral";
+  page +=baspage();
+  page+="</body></html>";
 
-  //}
+  
 
 
   request->send(200, "text/html", page);
@@ -191,6 +198,7 @@ void handleConfig(AsyncWebServerRequest *request) {
   <a href="reboot" class="w3-button w3-red w3-xxlarge w3-round-large w3-block"><b>Reboot</b></a><br>
   )rawliteral";
   //}
+  page +=baspage();
   page+=  FOOTER;
 
   request->send(200, "text/html", page);
@@ -236,10 +244,9 @@ void handleCommand(AsyncWebServerRequest *request) {
     for (size_t i = 0; i < REMOTES_COUNT; i++)
     {
       String val_i=String(remote_order[i]);
-      page1+=R"rawliteral(<tr><td><!--<td colspan="3">--><header class="w3-container w3-card w3-theme"><h1>)rawliteral";
+      page1+=R"rawliteral(<tr><td><header class="w3-container w3-card w3-theme"><h1>)rawliteral";
       page1+=String(remote_name[remote_order[i]]);
-      page1+=R"rawliteral(</h1></header></td> <!--</tr>
-            <tr>-->
+      page1+=R"rawliteral(</h1></header></td> 
             <td><a href="command?roller=)rawliteral";
       page1+=val_i;
       page1+=R"rawliteral(&command=0" class="w3-button w3-red w3-xlarge w3-round-large" style="width:100%"><span><div class="tourne90">&#10144;</div></span></a></td>
@@ -267,9 +274,13 @@ void handleCommand(AsyncWebServerRequest *request) {
     strcat(lapage, STYLE_Commande);
     strcat(lapage, page1.c_str());
     strcat(lapage, "</table><br><a href=\"\\\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a></div>");
-    strcat(lapage, FOOTER);
+    String tmp= String(lapage);
+    tmp+=baspage();
+    tmp+=FOOTER;
+    // strcat(lapage, FOOTER);
     // Serial.printf("Free heap: %u\n", ESP.getFreeHeap());
-    request->send(200, "text/html",  String(lapage));
+    // request->send(200, "text/html",  String(lapage));
+    request->send(200, "text/html",  tmp);
     delete[] lapage;
    }      
 }
@@ -359,6 +370,8 @@ if (request->method() == HTTP_GET) {
             </form>\
             <br/>\
             <a href=\"\\\" id=\"retour\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a><br/></div>";
+
+    page+=baspage();
     page+=FOOTER;
     request->send(200, "text/html", page);
    }   
@@ -461,7 +474,7 @@ void handlePrgmAdd(AsyncWebServerRequest *request) {
         <option value=\"\" disabled selected>Commande</option>\
         <option value=\"0\">Fermer</option>\
         <option value=\"1\">Ouvrir</option>\
-        <option value=\"2\">Fermer au coucher du soleil</option>\
+        <option value=\"2\">Fermer à la nuit</option>\
         <option value=\"3\">Ouvrir au lever du soleil</option>\
       </select>";
     
@@ -495,7 +508,8 @@ void handlePrgmAdd(AsyncWebServerRequest *request) {
         <a href=\"prgmlist\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>\
     </a>\
     <br/>";
-    page+="<i>Si l'heure de lever ou coucher de soleil inconnue, l'heure indiquée sera utilisée</i></div>";
+    page+="<i>Si l'heure de lever ou coucher de soleil inconnue, l'heure indiquée sera utilisée. La nuit est 30<small>min</small> après le coucher du soleil.</i></div>";
+    page+=baspage();
     page+=FOOTER;
     request->send(200, "text/html", page);
   }
@@ -580,7 +594,7 @@ void handlePrgmUpdate(AsyncWebServerRequest *request) {
     page+=">Ouvrir</option>\
             <option value=\"2\"";
     if (command==2) page+=" selected ";            
-    page+=">Fermer au coucher du soleil</option>\
+    page+=">Fermer à la nuit</option>\
             <option value=\"3\"";
     if (command==3) page+=" selected ";            
     page+=">Ouvrir au lever du soleil</option>\
@@ -622,7 +636,8 @@ void handlePrgmUpdate(AsyncWebServerRequest *request) {
         <a href=\"prgmlist\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>\
     </a>\
     <br/>";
-    page+="<i>Si l'heure de lever ou coucher de soleil inconnue, l'heure indiquée sera utilisée</i></div>";
+    page+="<i>Si l'heure de lever ou coucher de soleil inconnue, l'heure indiquée sera utilisée. La nuit est 30<small>min</small> après le coucher du soleil.</i></div>";
+    page+=baspage();
     page+=FOOTER;
     request->send(200, "text/html", page);
   }
@@ -669,6 +684,7 @@ void handleAttach(AsyncWebServerRequest *request) {
       page+="</a><br/>";
   }
   page+="<a href=\"config\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>";
+  page+=baspage();
   page+= FOOTER;
   request->send(200, "text/html", page);
 }
@@ -682,23 +698,24 @@ void handleWifi(AsyncWebServerRequest *request) {
 
   if (request->method() == HTTP_POST) { 
     // Bug l'ESP reboot !
-    // if (request->hasArg("refresh"))
-    // {
-    //   scanner_reseau();
-    //   redirect(request, (char*)"/wifi");
-    // }
-    
-    String accesspoint = request->arg("accesspoint");
-    // Serial.print("WEBSERVER - handleWifi - Storing accesspoint : ");
-    // Serial.println(accesspoint);
-    prefs_set("wifi","accesspoint",accesspoint);
-    String password = request->arg("password");
-    // Serial.print("WEBSERVER - handleWifi - Storing password : ");
-    // Serial.println(password);
-    prefs_set("wifi","password",password); 
-    
-     
+    if (request->hasArg("refresh"))
+    {
+      // Scan reseau  
+        esp_task_wdt_init(30, true); //délai d'attente est désactivé pendant 20 sec. pour eviter le redemarrage de l'EP32
+        esp_task_wdt_add(NULL);
+      scanner_reseau();
+         esp_task_wdt_reset();
+      Serial.println("scan reseau fait");
+      redirect(request, (char*)"/wifi");
+    }
+    else
+    if (request->hasArg("save")) {
+      String accesspoint = request->arg("accesspoint");
+      prefs_set("wifi","accesspoint",accesspoint);
+      String password = request->arg("password");
+      prefs_set("wifi","password",password); 
       request->redirect("/config");
+    }
     return;
     }
 
@@ -716,13 +733,15 @@ void handleWifi(AsyncWebServerRequest *request) {
         
     page+="<header class=\"w3-container w3-card w3-theme\"><h1>Wifi</h1></header>\
     <header class=\"wifi w3-container w3-card \">\
-  <!--  <form action='/wifi?refresh=1' method='POST'><button  class=\"w3-button w3-teal w3-xxlarge w3-round-large \" name='refresh' value='1'>Scan AP</button></form> -->\
     <div class=\"center\">\
-    <div class=\"wrap\">"; 
-    page+=get_liste_reseau();
+    <div class=\"wrap\"><div id=\"aplist\">"; 
+    page+=Liste_reseau;
+    page+="</div><div><div class=\"loading\" style=\"display:none\"></div></div>\
+          <form action='/wifi?refresh=1' method='POST'><button onclick=\"document.querySelector('#aplist').style.display='none';document.querySelector('.loading').style.display='block';\"  class=\"w3-button w3-teal w3-xxlarge w3-round-large \" name='refresh' value='1'>Scan AP</button></form>";
     // Formulaire saisie SSID mot de passe et boutons 
-    page+="</div></div></header><div class=\"w3-container\">\
-        <form action=\"wifi\" method=\"post\">\
+    page+="</div></div></header>\
+        <div class=\"w3-container\">\
+        <form action=\"wifi?save\" method=\"POST\">\
         <p>\
         <label class=\"w3-text-teal w3-xxlarge\"><b>Point d'acc&egrave;s</b></label>\
         <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"accesspoint\" name=\"accesspoint\" type=\"text\" value=\"";
@@ -737,7 +756,7 @@ void handleWifi(AsyncWebServerRequest *request) {
         </form>\
         <br/>\
         <a href=\"config\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>";
-
+      page+=baspage();
       page+=FOOTER;
 
    request->send(200, "text/html, charset=UTF-8", page);
@@ -848,6 +867,7 @@ void handleReseau(AsyncWebServerRequest *request) {
       <br/>
       <a href="config" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Retour</a>
       )rawliteral";
+      page+=baspage();
 page+=FOOTER;
 //Serial.print(page);
     request->send(200, "text/html, charset=UTF-8", page);
@@ -946,6 +966,7 @@ void handleSecurite(AsyncWebServerRequest *request) {
       <br/>
       <a href="config" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Retour</a>
       )rawliteral";
+      page+=baspage();
 page+=FOOTER;
 //Serial.print(page);
     request->send(200, "text/html, charset=UTF-8", page);
@@ -1008,6 +1029,7 @@ void handleApplication(AsyncWebServerRequest *request) {
 </form>\
 <br/>\
 <a href=\"config\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>";
+page+=baspage();
 page+=FOOTER;
 
     request->send(200, "text/html", page);
@@ -1018,7 +1040,7 @@ page+=FOOTER;
 
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page Horloge ? Synchronysation 
+// Page Horloge  Synchronysation 
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleClock(AsyncWebServerRequest *request) {
   identification(request);
@@ -1127,6 +1149,7 @@ void handleClock(AsyncWebServerRequest *request) {
             </form>\
             <br/>\
             <a href=\"config\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>";
+            page+=baspage();
       page+= FOOTER;
 
     request->send(200, "text/html", page);

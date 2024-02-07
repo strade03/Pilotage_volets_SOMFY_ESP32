@@ -5,7 +5,7 @@
 #include "ESP32Ping.h"
 #include "misc.h"
 
-#include "rs_webserver.h" // pour la fonction htmlEntities 
+#include "rs_webserver.h" 
 
 #define CONNECTION_TIMEOUT 20
 
@@ -32,19 +32,16 @@ int getRSSIasQuality(int RSSI) {
   }
   return quality;
 }
-//------------------------------------------------------------------------------------------------------
-// retourne la chaine Liste_reseau
-//------------------------------------------------------------------------------------------------------
 
-String get_liste_reseau(void){
-  return(Liste_reseau);
-}
-//------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 // Scan les bornes Wifi
 //------------------------------------------------------------------------------------------------------
 void scanner_reseau(void) {
-      Liste_reseau="<div></div>";
+      // Liste_reseau="<div></div>";
+      Liste_reseau="";
+
       int n = WiFi.scanNetworks();
+
       write_output_ln("Scan reseau");
       if (n == 0) {
           write_output_ln("no networks found");
@@ -66,16 +63,6 @@ void scanner_reseau(void) {
           
           // Fin tri
           for (int i = 0; i < n; ++i) {
-
-            // Serial.print(i + 1);
-            // Serial.print(": ");
-            // Serial.print(": ");
-            // Serial.print(WiFi.SSID(i));
-            // Serial.print(" (");
-            // Serial.print(WiFi.RSSI(i));
-            // Serial.print(")");
-            // write_output_ln((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");            
-//          delay(10);
 
             int rssiperc = getRSSIasQuality(WiFi.RSSI(indices[i]));
             uint8_t enc_type = WiFi.encryptionType(indices[i]);
@@ -109,12 +96,8 @@ bool connect_to_wifi() {
   int timeout_counter = 0;
 
   write_output_ln("WIFI - Connect to access point");
-  // Serial.print("WIFI - Access point : ");
   write_output_ln(ssid);
-  // Serial.print("WIFI - Password : ");
-  // write_output_ln(password);
-
-  
+    
   if (strlen(ssid)==0) return(false);
   
   WiFi.begin(ssid, password);
@@ -124,8 +107,8 @@ bool connect_to_wifi() {
     //  Serial.print("*");
      timeout_counter++;
      if(timeout_counter >= CONNECTION_TIMEOUT){
-      // Serial.print("Connexion impossible ! à ");
-      // write_output_ln(ssid);
+       Serial.print("Connexion impossible ! à ");
+       write_output_ln(ssid);
       return(false);
    }
   }

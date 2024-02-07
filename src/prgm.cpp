@@ -94,8 +94,8 @@ void checkprgms(int cur_h, int cur_m) {
       if (command==2) {
           uint8_t hour_sol = 0;
           uint8_t minute_sol = 0;
-          hour_sol=heure_soleil("coucher");
-          minute_sol=minute_soleil("coucher");
+          hour_sol=heure_soleil("nuit"); // Coucher + 30 min
+          minute_sol=minute_soleil("nuit");
           if ((minute_sol!=-1) && (hour_sol!=-1)) {
           hour=hour_sol;
           minute=minute_sol;}

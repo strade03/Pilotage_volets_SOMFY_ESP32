@@ -25,7 +25,7 @@ void setup() {
   Serial.begin(115200);
   write_output_ln("\n\n** Boot in progress....");
 
-  //setCpuFrequencyMhz(80);
+  setCpuFrequencyMhz(80);
   // int cpuSpeed = getCpuFrequencyMhz();
   // Serial.print("CPU Frequency :");
   // Serial.println(cpuSpeed);
@@ -49,13 +49,17 @@ void setup() {
     // enable_checkWifiTask(); // TODO A REMETTRE ? si pas de connection reboot donc perte du temps ! // parametrage de la Task qui appelera check_wifi fonction qui test via ping 8.8.8.8 et renseigne la variable failingWifi = 0 si ok sinon retente la connexion puis reboot en cas d'echec
     if (inittime()) {       // Mise à l'heure
       digitalWrite(STATUS_LED_PIN, LOW);
-      time_set = true;
-      enable_initTimeTask(); // initialise de temps en temps l'heure
     } 
-    if (get_meteo()) // Lecture de la meteo et heure de lever et coucher du soleil
+    else {
+      settime(0,0); // on initialise une heure pour éviter les bugs 
+    }
+    if (get_meteo()) {// Lecture de la meteo et heure de lever et coucher du soleil
+
       enable_initMeteoTask(); 
+    }
   }
   
+  enable_initTimeTask(); // initialise de temps en temps l'heure
   ws_config(rescue_mode); // Configuration initialisation générale avec les liens des pages => fonctions
   
   prefs_loadprgms(); // charge programmes 
@@ -75,11 +79,11 @@ void loop() {
   {
     if (!time_set)  {
       write_output_ln("Main.Loop - L'heure n'est pas définie, j'essaie de l'obtenir...");
-      if (inittime()) {
-        digitalWrite(STATUS_LED_PIN, LOW);
-        write_output_ln("Main.Loop - Réglage de l'heure");
-        time_set = true;
-      }
+      // if (inittime()) {
+      //   digitalWrite(STATUS_LED_PIN, LOW);
+      //   write_output_ln("Main.Loop - Réglage de l'heure");
+      //   time_set = true;
+      // }
     }
   }
   // Task scheduler

@@ -5,7 +5,7 @@
 
 #define MAX_FAILING_WIFI 10
 
-String get_liste_reseau(void);
+// String get_liste_reseau(void);
 void scanner_reseau(void);
 bool connect_to_wifi();
 void start_softap(void);

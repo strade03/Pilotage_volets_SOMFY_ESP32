@@ -12,4 +12,12 @@ void movedown(int roller);
 void prog(int roller);
 void stop(int roller);
 
+int getTotalRam();
+int getFreeRam();
+int getTotalFlash();
+int getFreeFlash();
+int getCpuFrequency();
+void setCpuFrequency(int f);
+
+
 #endif //MISC_H_

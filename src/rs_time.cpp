@@ -24,7 +24,9 @@ String visibility = "";
 String  win_speed = "";
 String win_deg = "";
 String icon = "";
-
+uint8_t hour_maj=0; // TODO A SUPP
+uint8_t minute_maj=0;
+extern bool time_set;
 
 bool inittime(void) {
   prefs_get_ntp_server(ntpServer);
@@ -33,8 +35,10 @@ bool inittime(void) {
   struct tm timeinfo;
   if(!getLocalTime(&timeinfo)){
     // write_output_ln("Failed to obtain time in inittime");
+    time_set=false;
     return false;
   }
+  time_set=true;
   return true;
 }
 
@@ -46,7 +50,6 @@ bool gettime(uint8_t * hours, uint8_t * minutes) {
     // Serial.println("Failed to obtain time in gettime");
     return false;
   }
-
   *hours = timeinfo.tm_hour;
   *minutes = timeinfo.tm_min;
 
@@ -99,16 +102,20 @@ String keysToStr(String reponse,String chaine)
 // Retourne l'heure du coucher ou lever du soleil
 uint8_t heure_soleil(String type) // type = coucher ou lever
 {
-  uint8_t h=0;
+  
   char timestamp[12];
   char timezone[10];
   if (type=="lever") 
     prefs_get("meteo","sunrise",timestamp,12,"");
   else
+  if ((type=="coucher") || (type=="nuit"))
     prefs_get("meteo","sunset",timestamp,12,"");
   prefs_get("meteo","timezone",timezone,10,"");
-  if (timestamp!="")
-    return ( (atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+  if (timestamp!="") 
+    if (type=="nuit") 
+      return( (1800+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+    else
+      return ( (atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
   else
     return(-1);
 }
@@ -122,11 +129,33 @@ uint8_t minute_soleil(String type) // type = coucher ou lever
   if (type=="lever") 
     prefs_get("meteo","sunrise",timestamp,12,"");
   else
+  if ((type=="coucher") || (type=="nuit"))
     prefs_get("meteo","sunset",timestamp,12,"");
   if (timestamp!="")
-    return ( atoi(timestamp)/ 60 % 60 ) ;
+    if (type=="nuit")
+      return ( (1800+atoi(timestamp))/ 60 % 60 );
+    else
+      return ( atoi(timestamp)/ 60 % 60 );
   else
     return(-1);
+}
+
+String timeToStr(uint8_t hour, uint8_t minute)
+{  
+  String hourStr = (hour < 10)? "0"+String(hour):String(hour); 
+  String minuteStr = (minute < 10)? "0"+String(minute):String(minute); 
+  return(hourStr+ ":" + minuteStr);
+}
+
+String timeToStr(String type)
+{
+ uint8_t heure_sol; 
+ uint8_t minute_sol; 
+ heure_sol=heure_soleil(type);
+ minute_sol=minute_soleil(type);
+ if ((heure_sol>-1) && (minute_sol>-1))
+   return (timeToStr(heure_sol,minute_sol));
+  return("");
 }
 
 String getWindDirection(float deg) {
@@ -170,28 +199,19 @@ void extrationJSON(String reponse){
   if (sunset_tmp!="") sunset=sunset_tmp;
   if (sunrise_tmp!="") sunrise=sunrise_tmp;
 
+  
+  
+  gettime(&hour_maj, &minute_maj);
 // Sauvegarde dans la mémoire flash l'heure de coucher et de lever du soleil si modification
   char sunrise_base[12] = "";
   prefs_get("meteo","sunrise",sunrise_base,12,"");
   char sunset_base[12] = "";
   prefs_get("meteo","sunset",sunset_base,12,"");
 
-  if (strcmp(sunrise.c_str(), sunrise_base)==0)
+  if (strcmp(sunrise.c_str(), sunrise_base)!=0)
     prefs_set("meteo","sunrise",sunrise);
-  if (strcmp(sunset.c_str(), sunset_base)==0)
+  if (strcmp(sunset.c_str(), sunset_base)!=0)
     prefs_set("meteo","sunset",sunset);
-
-  // prefs_set("meteo","sunrise",sunrise);
-  // prefs_set("meteo","sunset",sunset);
-  // prefs_set("meteo","timezone",timezone);
-  // prefs_set("meteo","temperature",temperature);
-  // prefs_set("meteo","pressure",pressure);
-  // prefs_set("meteo","humidity",humidity);
-  // prefs_set("meteo","visibility",visibility);
-  // prefs_set("meteo","win_speed",win_speed);
-  // prefs_set("meteo","win_deg",win_deg);
-  // prefs_set("meteo","icon",icon);
-
 }
 
 
