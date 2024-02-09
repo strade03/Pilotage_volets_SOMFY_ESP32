@@ -16,8 +16,7 @@ const long interval = 2000;
 unsigned long previousMillis = 0;
 extern bool time_set;
 bool wifi_connected;
-// uint8_t previous_hour = 0;
-// uint8_t previous_minute = 0;
+
 extern SomfyRTS somfy;
 void setup() {
   wifi_connected =  false;
@@ -26,7 +25,7 @@ void setup() {
   Serial.begin(115200);
   write_output_ln("\n\n** Boot in progress....");
 
-  setCpuFrequencyMhz(80);
+  setCpuFrequencyMhz(80); // Réduction de la fréquance CPU pour économiser l'energie
   // int cpuSpeed = getCpuFrequencyMhz();
   // Serial.print("CPU Frequency :");
   // Serial.println(cpuSpeed);
