@@ -17,6 +17,7 @@ class SomfyRTS {
     void movedown( int remote );
     void stop( int remote );
     void prog( int remote );
+    void setRTS_address(unsigned long RTS_address);
 
   private:
     void _initRadio();
@@ -24,7 +25,6 @@ class SomfyRTS {
     void _configRTS(unsigned int EEPROM_address, unsigned long RTS_address);
     void _sendCommandSomfy(byte sync);
     void _buildFrameSomfy();
-    
 
   protected:
 

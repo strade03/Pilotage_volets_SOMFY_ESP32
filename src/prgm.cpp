@@ -112,8 +112,8 @@ void checkprgms(int cur_h, int cur_m) {
           command=1;
       }
       
-      heure_soleil("lever");
-      minute_soleil("lever");
+      // heure_soleil("lever");
+      // minute_soleil("lever");
 
 
       if (actif==1 && cur_h==hour && cur_m==minute) { // Si l'heure du programme et actif on lance le programme

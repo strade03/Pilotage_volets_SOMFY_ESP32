@@ -40,6 +40,21 @@ boolean prefs_get_bool(const char* folder,const char* name_key,boolean defaultVa
   return result; 
 }
 
+void prefs_set_long(const char* folder,const char* name_key,long key) {
+  preferences.begin(folder,false);
+  preferences.putLong(name_key, key);
+  preferences.end();
+}
+
+long prefs_get_long(const char* folder,const char* name_key,long defaultValue) {
+  long result = defaultValue;
+  preferences.begin(folder,false);
+  if (preferences.isKey(name_key)) 
+    result=preferences.getLong(name_key);
+  preferences.end();
+  return result; 
+}
+
 
 
 void prefs_set_key(String key) {

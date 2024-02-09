@@ -8,13 +8,19 @@ SomfyRTS::SomfyRTS(byte pinTx) {
 
   _pinTx = pinTx;
   _EEPROM_address = 0;
-  _RTS_address = 0x121300; // code unique de la telecommande auquel on ajoute le N° de la télécommande
+  // _RTS_address = RTS_address; // code unique de la telecommande auquel on ajoute le N° de la télécommande
   _actionCommand = STOP;
   _virtualRemoteNumber = 0;
 
   this->_initRadio();
 }
-    
+
+
+void SomfyRTS::setRTS_address(unsigned long RTS_address) {
+  
+  _RTS_address = RTS_address; 
+  
+}
 
 void SomfyRTS::_initRadio() {
   

@@ -8,6 +8,7 @@
 // #include "esp32-hal-cpu.h"
 #include "rs_scheduledtasks.h"
 #include "prgm.h"
+#include "SomfyRTS.h"
 
 int rescue_mode = 0;
 bool internet_ok= false;
@@ -17,11 +18,11 @@ extern bool time_set;
 bool wifi_connected;
 // uint8_t previous_hour = 0;
 // uint8_t previous_minute = 0;
-
-
+extern SomfyRTS somfy;
 void setup() {
   wifi_connected =  false;
-  
+  unsigned long RTS_address=prefs_get_long("somfy","rts",0x121340);
+  somfy.setRTS_address(RTS_address);
   Serial.begin(115200);
   write_output_ln("\n\n** Boot in progress....");
 

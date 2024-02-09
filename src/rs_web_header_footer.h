@@ -30,17 +30,15 @@ background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIA
 char STYLE_Commande[]=R"rawliteral(<style>
 .tourne90{transform:rotate(90deg);}
 .tourne270{transform:rotate(270deg);}
-
 .w3-table tr td:nth-child(n+2) span{font-size:50px;}
 .w3-table tr td:nth-child(n+2){width:90px;}
 .commandes tr td{padding:6px 2px}
 .commandes tr td a{padding:0px 16px}
 .w3-table tr td:first-child{padding-left:0px}
-@media only screen and (max-width:600px){div{font-size:0.5em!important}
+@media only screen and (max-width:600px){
 .w3-table tr td:nth-child(n+2){width:20px;}
-.w3-table tr td:nth-child(n+2) span{font-size:35px;}
+.w3-table tr td:nth-child(n+2) span{font-size:33px;}
 .w3-table tr td:first-child h1{font-size:20px;white-space:nowrap;}
-.w3-xxlarge{font-size:24px!important};
 }
 @media only screen and (min-width:900px){
 .w3-table{width:868px;margin:0 auto;}
@@ -300,12 +298,15 @@ hr{border:0;border-top:1px solid #eee;margin:20px 0}
 .w3-border-teal,.w3-hover-border-teal:hover{border-color:#009688!important}
 .w3-table tr td:nth-child(n+2) span{font-size:40px;}
 .w3-display-topmiddle{position:absolute;left:50%;top:0;transform:translate(-50%,0%);-ms-transform:translate(-50%,0%)}
-@media only screen and (max-width:600px){div{font-size:0.5em!important}.w3-xxlarge{font-size:24px!important};}}
+@media only screen and (max-width:600px){
+div:not([class^="tourne"]) {font-size:0.5em!important}
+.w3-xxlarge{font-size:24px!important};}}
 </style>)rawliteral";
 
 char STYLE_w3[]="<link rel=\"stylesheet\" href=\"https://www.w3schools.com/w3css/4/w3.css\">\
  <link rel=\"stylesheet\" href=\"https://www.w3schools.com/lib/w3-theme-green.css\">\
- <style>@media only screen and (max-width:600px){div{font-size:0.5em!important}.w3-xxlarge{font-size:24px!important};}</style>";
+ <style>@media only screen and (max-width:600px){div:not([class^=\"tourne\"]):not(.centre):not(.no):not(#aplist):not(:has(i)) {font-size:0.5em!important}\
+ .w3-xxlarge{font-size:24px!important};}</style>";
 
 // // Trop lourd !
 // char STYLE_w3_toolg[] = "<style>\

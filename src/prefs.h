@@ -16,7 +16,8 @@ void prefs_set(const char* folder,const char* name_key,String key);
 void prefs_get(const char* folder,const char* name_key,char * key, const int length,const char* defaultValue);
 void prefs_set_bool(const char* folder,const char* name_key,boolean key);
 boolean prefs_get_bool(const char* folder,const char* name_key,boolean defaultValue);
-
+void prefs_set_long(const char* folder,const char* name_key,long key);
+long prefs_get_long(const char* folder,const char* name_key,long defaultValue);
 
 void prefs_set_key(String key);
 void prefs_get_key(char * key);

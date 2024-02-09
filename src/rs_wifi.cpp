@@ -66,8 +66,8 @@ void scanner_reseau(void) {
 
             int rssiperc = getRSSIasQuality(WiFi.RSSI(indices[i]));
             uint8_t enc_type = WiFi.encryptionType(indices[i]);
-            Liste_reseau+="<div>\
-              <a href=\"#p\" onclick=\"c(this)\" data-ssid=\""+htmlEntities(WiFi.SSID(indices[i]),true)+"\">"+htmlEntities(WiFi.SSID(indices[i]),true)+"</a>\
+            Liste_reseau+="<div class=\"no\">\
+              <a class=\"no\" href=\"#p\" onclick=\"c(this)\" data-ssid=\""+htmlEntities(WiFi.SSID(indices[i]),true)+"\">"+htmlEntities(WiFi.SSID(indices[i]),true)+"</a>\
               <div role=\"img\" aria-label=\""+(String)rssiperc+"%\" title=\""+(String)rssiperc+"%\" class=\"q q-"+(String)int(round(map(rssiperc,0,100,1,4)))+" "+(String)(enc_type != WIFI_AUTH_OPEN ? "l":" ") +" \"></div>\
               <div class=\"q h\">"+(String)rssiperc+"%</div>\
               </div>";

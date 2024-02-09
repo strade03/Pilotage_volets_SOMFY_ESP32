@@ -10,7 +10,7 @@
 #include "misc.h"
 #include "rs_scheduledtasks.h"
 #include "rs_web_header_footer.h"
-
+#include "SomfyRTS.h"
 #include "rs_wifi.h"
 
 char key[10];
@@ -25,6 +25,8 @@ extern bool internet_ok;
 extern bool time_set;
 
 extern String Liste_reseau;
+
+extern SomfyRTS somfy;
 //------------------------------------------------------------------------------------------------------------------------------------
 // Page non trouvée => erreur 404
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -205,7 +207,7 @@ void handleConfig(AsyncWebServerRequest *request) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page Commande = télécommandes virtuelles => commandes   OK 01/2024
+// Page Commande = télécommandes virtuelles => commandes
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleCommand(AsyncWebServerRequest *request) {
   identification(request);
@@ -378,7 +380,7 @@ if (request->method() == HTTP_GET) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Efface programme Ok 2/2023
+// Efface programme
 //------------------------------------------------------------------------------------------------------------------------------------
 void handlePrgmDelete(AsyncWebServerRequest *request) {
   identification(request);
@@ -395,7 +397,7 @@ void handlePrgmDelete(AsyncWebServerRequest *request) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Active programme Ok 2/2023
+// Active programme
 //------------------------------------------------------------------------------------------------------------------------------------
 void handlePrgmActive(AsyncWebServerRequest *request) {
   identification(request);
@@ -416,7 +418,7 @@ void handlePrgmActive(AsyncWebServerRequest *request) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page Ajout programme OK 2/2023
+// Page Ajout programme
 //------------------------------------------------------------------------------------------------------------------------------------
 void handlePrgmAdd(AsyncWebServerRequest *request) {
   identification(request);
@@ -474,8 +476,10 @@ void handlePrgmAdd(AsyncWebServerRequest *request) {
         <option value=\"\" disabled selected>Commande</option>\
         <option value=\"0\">Fermer</option>\
         <option value=\"1\">Ouvrir</option>\
-        <option value=\"2\">Fermer à la nuit</option>\
-        <option value=\"3\">Ouvrir au lever du soleil</option>\
+        <option value=\"4\">Fermer &#9728; au coucher du soleil</option>\
+        <option value=\"2\">Fermer &#x2606 au début de la nuit</option>\
+        <option value=\"3\">Ouvrir &#9728; au lever du soleil</option>\
+        <option value=\"5\">Ouvrir &#x2606 au début du jour</option>\
       </select>";
     
     // Heures/minutes
@@ -508,7 +512,7 @@ void handlePrgmAdd(AsyncWebServerRequest *request) {
         <a href=\"prgmlist\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>\
     </a>\
     <br/>";
-    page+="<i>Si l'heure de lever ou coucher de soleil inconnue, l'heure indiquée sera utilisée. La nuit est 30<small>min</small> après le coucher du soleil.</i></div>";
+    page+="<i>Si l'heure de lever ou coucher de soleil inconnue, l'heure indiquée sera utilisée. Réglage nuit/jour dans paramètrage heure.</i></div>";
     page+=baspage();
     page+=FOOTER;
     request->send(200, "text/html", page);
@@ -516,7 +520,7 @@ void handlePrgmAdd(AsyncWebServerRequest *request) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page Modification programme OK 2/2023
+// Page Modification programme
 //------------------------------------------------------------------------------------------------------------------------------------
 void handlePrgmUpdate(AsyncWebServerRequest *request) {
   identification(request);
@@ -592,12 +596,18 @@ void handlePrgmUpdate(AsyncWebServerRequest *request) {
             <option value=\"1\"";
     if (command==1) page+=" selected ";            
     page+=">Ouvrir</option>\
+            <option value=\"4\"";
+    if (command==4) page+=" selected ";            
+    page+=">Fermer &#9728; au coucher du soleil</option>\
             <option value=\"2\"";
     if (command==2) page+=" selected ";            
-    page+=">Fermer à la nuit</option>\
+    page+=">Fermer &#x2606; au début de la nuit</option>\
             <option value=\"3\"";
     if (command==3) page+=" selected ";            
-    page+=">Ouvrir au lever du soleil</option>\
+    page+=">Ouvrir &#9728; au lever du soleil</option>\
+            <option value=\"5\"";
+    if (command==5) page+=" selected ";            
+    page+=">Ouvrir &#x2606; au début du jour</option>\
             </select>";
 
     // Heures/minutes
@@ -636,7 +646,7 @@ void handlePrgmUpdate(AsyncWebServerRequest *request) {
         <a href=\"prgmlist\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>\
     </a>\
     <br/>";
-    page+="<i>Si l'heure de lever ou coucher de soleil inconnue, l'heure indiquée sera utilisée. La nuit est 30<small>min</small> après le coucher du soleil.</i></div>";
+    page+="<i>Si l'heure de lever ou coucher de soleil inconnue, l'heure indiquée sera utilisée. Réglage nuit/jour dans paramètrage heure.</i></div>";
     page+=baspage();
     page+=FOOTER;
     request->send(200, "text/html", page);
@@ -644,7 +654,7 @@ void handlePrgmUpdate(AsyncWebServerRequest *request) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page Attacher les télécommandes OK 2/2023
+// Page Attacher les télécommandes
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleAttach(AsyncWebServerRequest *request) {
   identification(request);
@@ -690,7 +700,7 @@ void handleAttach(AsyncWebServerRequest *request) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page paramètres WIFI parametrage OK 13/01/2024
+// Page paramètres WIFI parametrage
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleWifi(AsyncWebServerRequest *request) {
   identification(request);
@@ -734,7 +744,7 @@ void handleWifi(AsyncWebServerRequest *request) {
     page+="<header class=\"w3-container w3-card w3-theme\"><h1>Wifi</h1></header>\
     <header class=\"wifi w3-container w3-card \">\
     <div class=\"center\">\
-    <div class=\"wrap\"><div id=\"aplist\">"; 
+    <div class=\"wrap no\"><div id=\"aplist\">"; 
     page+=Liste_reseau;
     page+="</div><div><div class=\"loading\" style=\"display:none\"></div></div>\
           <form action='/wifi?refresh=1' method='POST'><button onclick=\"document.querySelector('#aplist').style.display='none';document.querySelector('.loading').style.display='block';\"  class=\"w3-button w3-teal w3-xxlarge w3-round-large \" name='refresh' value='1'>Scan AP</button></form>";
@@ -767,7 +777,7 @@ void handleWifi(AsyncWebServerRequest *request) {
 
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page parametre reseau ok 14/01/2024
+// Page parametre reseau
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleReseau(AsyncWebServerRequest *request) {
   identification(request);
@@ -975,7 +985,7 @@ page+=FOOTER;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page paramètres serveur NTP (horaires) 
+// Page paramètres avancés
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleApplication(AsyncWebServerRequest *request) {
   identification(request);
@@ -994,6 +1004,13 @@ void handleApplication(AsyncWebServerRequest *request) {
       prefs_set_token(token_arg);
     }
 
+    if(request->hasArg("RTSaddress")){
+      String RTSaddress = request->arg("RTSaddress");
+      write_output_ln("WEBSERVER - handleApplication - Storing RTSaddress : " + RTSaddress);
+      prefs_set_long("somfy","rts",(unsigned long) RTSaddress.toInt());
+      somfy.setRTS_address((unsigned long) RTSaddress.toInt());
+    }
+
     redirect(request, (char*)"/config");
     return;
   }
@@ -1004,7 +1021,8 @@ void handleApplication(AsyncWebServerRequest *request) {
     char key_str[KEY_LENGTH];
     prefs_get_key(key_str);
     prefs_get_token(token);
-    
+    unsigned long RTS_address=prefs_get_long("somfy","rts",0x121340);
+
     String page;
     page = HEADER ;
     if (internet_ok==true)
@@ -1024,6 +1042,10 @@ void handleApplication(AsyncWebServerRequest *request) {
 <hr>\
   <label class=\"w3-text-teal w3-xxlarge\"><b>Token d'accéder à l'API</b></label>\
   <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"token\" name=\"token\" type=\"text\" value=\""+token+"\"></p>\
+<br>\
+<hr>\
+  <label class=\"w3-text-teal w3-xxlarge\"><b>Adresse base télécommande RTS</b></label>\
+  <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"RTSaddress\" name=\"RTSaddress\" type=\"text\" value=\""+RTS_address+"\"></p>\
 <br>\
 <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
 </form>\
@@ -1079,6 +1101,18 @@ void handleClock(AsyncWebServerRequest *request) {
       prefs_set("openweathermap","lat",lat_new);
     }
 
+    if(request->hasArg("jour")){
+      String jour = request->arg("jour");
+      write_output_ln("WEBSERVER - handleApplication - Storing jour : " + jour);
+      prefs_set("heure","jour",jour);
+    }
+
+    if(request->hasArg("nuit")){
+      String nuit = request->arg("nuit");
+      write_output_ln("WEBSERVER - handleApplication - Storing nuit : " + nuit);
+      prefs_set("heure","nuit",nuit);
+    }
+
     // A voir pour le faire si on le demande 
     String hours = request->arg("hours");
     String minutes = request->arg("minutes");
@@ -1101,9 +1135,13 @@ void handleClock(AsyncWebServerRequest *request) {
     char openweathermap_api[50];
     char lon[10]="";
     char lat[10]="";
+    char nuit[4]="";
+    char jour[4]="";
     prefs_get("openweathermap","api",openweathermap_api,50,"");
     prefs_get("openweathermap","lon",lon,9,"2.3333");
     prefs_get("openweathermap","lat",lat,9,"48.8666");
+    prefs_get("heure","jour",jour,4,"30");
+    prefs_get("heure","nuit",nuit,4,"30");
  
     String page;
 
@@ -1131,6 +1169,16 @@ void handleClock(AsyncWebServerRequest *request) {
     <div class=\"w3-half\">\
       <label class=\"w3-text-teal w3-xxlarge\" for=\"latitude\">Latitute</label><br/>\
       <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" type=\"text\" id=\"latitude\" name=\"latitude\" value=\""+lat+"\"><br/>\
+    </div>\
+  </div>\
+  <div class=\"w3-row\">\
+    <div class=\"w3-half\">\
+      <label class=\"w3-text-teal w3-xlarge\" for=\"jour\">jour : nb de minutes avant lever</label><br/>\
+      <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" maxlength=\"4\" type=\"text\" id=\"jour\" name=\"jour\" value=\""+jour+"\"><br/>\
+    </div>\
+    <div class=\"w3-half\">\
+      <label class=\"w3-text-teal w3-xlarge\" for=\"nuit\">nuit : nb de minutes après coucher</label><br/>\
+      <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" maxlength=\"4\" type=\"text\" id=\"nuit\" name=\"nuit\" value=\""+nuit+"\"><br/>\
     </div>\
   </div>\
             <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
@@ -1245,10 +1293,16 @@ void getcommandname(uint8_t command, char * name) {
       strcpy(name, "Ouvrir");
       break;      
     case 2 :
-      strcpy(name, "Fermer &#9728;");
+      strcpy(name, "Fermer &#x2606;");
       break;
     case 3 :
-      strcpy(name, "Ouvrir &#9728;");
+      strcpy(name, "Ouvrir &#9728;"); 
+      break;
+    case 4 :
+      strcpy(name, "Fermer &#9728;");
+      break;
+    case 5 :
+      strcpy(name, "Ouvrir &#x2606;");
       break;
   }
 }

@@ -24,7 +24,7 @@ String visibility = "";
 String  win_speed = "";
 String win_deg = "";
 String icon = "";
-uint8_t hour_maj=0; // TODO A SUPP
+uint8_t hour_maj=0;
 uint8_t minute_maj=0;
 extern bool time_set;
 
@@ -105,15 +105,26 @@ uint8_t heure_soleil(String type) // type = coucher ou lever
   
   char timestamp[12];
   char timezone[10];
-  if (type=="lever") 
+  char jour[4];
+  char nuit[4];
+  if ((type=="lever") || (type=="jour")) 
     prefs_get("meteo","sunrise",timestamp,12,"");
   else
   if ((type=="coucher") || (type=="nuit"))
     prefs_get("meteo","sunset",timestamp,12,"");
   prefs_get("meteo","timezone",timezone,10,"");
   if (timestamp!="") 
-    if (type=="nuit") 
-      return( (1800+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+    if (type=="nuit") {
+      prefs_get("heure","nuit",nuit,4,"30");
+      int hours_nuit = 60*floor(atoi(nuit) / 60.0);
+      return( (hours_nuit+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+    }
+    else
+    if (type=="jour") {
+      prefs_get("heure","jour",jour,4,"30");
+      int hours_jour = 60*floor(atoi(jour) / 60.0);
+      return( (-hours_jour+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+    }
     else
       return ( (atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
   else
@@ -126,14 +137,25 @@ uint8_t minute_soleil(String type) // type = coucher ou lever
   uint8_t h=0;
   char timestamp[12];
   char timezone[10];
-  if (type=="lever") 
+  char jour[4];
+  char nuit[4];
+  if ((type=="lever") || (type=="jour"))
     prefs_get("meteo","sunrise",timestamp,12,"");
   else
   if ((type=="coucher") || (type=="nuit"))
     prefs_get("meteo","sunset",timestamp,12,"");
   if (timestamp!="")
-    if (type=="nuit")
-      return ( (1800+atoi(timestamp))/ 60 % 60 );
+    if (type=="nuit") {
+      prefs_get("heure","nuit",nuit,4,"30");
+      int minutes_nuit = atoi(nuit) % 60;
+      return ( (minutes_nuit+atoi(timestamp))/ 60 % 60 );
+    }
+    else
+    if (type=="jour") {
+      prefs_get("heure","jour",jour,4,"30");
+      int minutes_jour = atoi(jour) % 60;
+      return ( (-minutes_jour+atoi(timestamp))/ 60 % 60 );
+    }
     else
       return ( atoi(timestamp)/ 60 % 60 );
   else
