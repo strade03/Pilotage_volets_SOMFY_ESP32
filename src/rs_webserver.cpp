@@ -154,7 +154,7 @@ void handleMain(AsyncWebServerRequest *request) {
     </tr><tr><td class=\"w3-theme w3-card\">Pression<br>"+pressure+"<small>hPa</small></td>\
     <td class=\"w3-theme w3-card\">Humidité<br>"+humidity+"<small>%</small> </td></tr>\
     <tr><td class=\"w3-theme w3-card\">&#x1F506; lever: "+ timeToStr("lever") +"<br>&#x1F506; coucher: "+ timeToStr("coucher") +"</td>\
-    <td class=\"w3-theme w3-card\">&#x2606 nuit: "+ timeToStr("nuit")+" </td></tr></table>";
+    <td class=\"w3-theme w3-card\">&#x2606 jour: "+ timeToStr("jour")+"<br>&#x2606 nuit: "+ timeToStr("nuit")+" </td></tr></table>";
 
   page += "</td></tr></table>";
   }
