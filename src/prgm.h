@@ -13,7 +13,7 @@ typedef struct  {
     uint8_t roller = 0; // N° volet
     uint8_t hour = 0;
     uint8_t minute = 0;    
-    uint8_t command = false; // 0 fermer, 1 ouvrir
+    uint8_t command = 0; // 0 fermer, 1 ouvrir...
 }prgm_t;
 
 int getavailableprgm(void);
