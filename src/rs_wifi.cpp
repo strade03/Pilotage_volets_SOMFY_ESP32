@@ -81,16 +81,16 @@ void scanner_reseau(void) {
 //------------------------------------------------------------------------------------------------------
 bool connect_to_wifi() {
   char ssid[ACCESSPOINT_LENGTH];
-  prefs_get("wifi","accesspoint",ssid,ACCESSPOINT_LENGTH,"");
+  prefs_get_str("wifi","accesspoint",ssid,ACCESSPOINT_LENGTH,"");
   char password[PASSWORD_LENGTH];
-  prefs_get("wifi","password",password,ACCESSPOINT_LENGTH,"");
+  prefs_get_str("wifi","password",password,ACCESSPOINT_LENGTH,"");
   
   char reseau_ip[IP_LENGTH];
-  prefs_get("reseau","ip",reseau_ip,IP_LENGTH,"192.168.1.111");
+  prefs_get_str("reseau","ip",reseau_ip,IP_LENGTH,"192.168.1.111");
   char reseau_masque[IP_LENGTH];
-  prefs_get("reseau","masque",reseau_masque,IP_LENGTH,"255.255.255.0");
+  prefs_get_str("reseau","masque",reseau_masque,IP_LENGTH,"255.255.255.0");
   char reseau_passerelle[IP_LENGTH];
-  prefs_get("reseau","passerelle",reseau_passerelle,IP_LENGTH,"192.168.1.254");
+  prefs_get_str("reseau","passerelle",reseau_passerelle,IP_LENGTH,"192.168.1.254");
   boolean reseau_dhcp=prefs_get_bool("reseau","dhcp",true);
 
   int timeout_counter = 0;

@@ -41,9 +41,9 @@ void notFound(AsyncWebServerRequest *request) {
 
 void identification(AsyncWebServerRequest *request) {
   char admin_mdp[PASSWORD_LENGTH];
-  prefs_get("admin","mdp",admin_mdp,PASSWORD_LENGTH,"admin");
+  prefs_get_str("admin","mdp",admin_mdp,PASSWORD_LENGTH,"admin");
   char admin_id[PASSWORD_LENGTH];
-  prefs_get("admin","identifiant",admin_id,PASSWORD_LENGTH,"admin");
+  prefs_get_str("admin","identifiant",admin_id,PASSWORD_LENGTH,"admin");
   boolean admin_actif=prefs_get_bool("admin","active",false);
   if ((admin_actif==true) and (!rescue_mode))
     if(!request->authenticate(admin_id,admin_mdp))
@@ -132,9 +132,9 @@ void handleMain(AsyncWebServerRequest *request) {
   )rawliteral";
   if (!rescue_mode){
     char sunrise[12] = "";
-    prefs_get("meteo","sunrise",sunrise,12,"");
+    prefs_get_str("meteo","sunrise",sunrise,12,"");
     char sunset[12] = "";
-    prefs_get("meteo","sunset",sunset,12,"");
+    prefs_get_str("meteo","sunset",sunset,12,"");
     
     extern String   temperature;
     extern String  pressure;
@@ -654,7 +654,7 @@ void handlePrgmUpdate(AsyncWebServerRequest *request) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page Attacher les télécommandes
+// Page Appairer les télécommandes aux volets V0
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleAttach(AsyncWebServerRequest *request) {
   identification(request);
@@ -680,7 +680,7 @@ void handleAttach(AsyncWebServerRequest *request) {
     page= page + STYLE_w3_light + HEADER_close;
 
   page+="<header class=\"w3-container w3-card w3-theme\">\
-  <h1>Attacher Volets</h1>\
+  <h1>Appairer télécommandes aux Volets</h1>\
   </header>\
   <div class=\"w3-container\">\
   <br/>";
@@ -698,6 +698,77 @@ void handleAttach(AsyncWebServerRequest *request) {
   page+= FOOTER;
   request->send(200, "text/html", page);
 }
+
+//------------------------------------------------------------------------------------------------------------------------------------
+// Page Appairer les télécommandes aux volets V1
+//------------------------------------------------------------------------------------------------------------------------------------
+// void handleAttach(AsyncWebServerRequest *request) {
+//   identification(request);
+//   write_output_ln("WEBSERVER - handleAttach - Programmation télécommandes");
+
+//   if (request->hasArg("roller")) {
+//     String roller_str = request->arg("roller");
+//     int roller = roller_str.toInt();
+
+//     // Serial.print("WEBSERVER - handleAttach - Attaching roller : ");
+//     // Serial.println(roller);
+//     prog(roller);
+
+//     redirect(request, (char*)"/attach");
+//     return;
+//   }
+
+//   String page;
+//   page = HEADER ;
+//   if (internet_ok==true)
+//     page= page + STYLE_w3 + HEADER_close;
+//   else
+//     page= page + STYLE_w3_light + HEADER_close;
+
+//   page+="<header class=\"w3-container w3-card w3-theme\">\
+//   <h1>Appairer télécommande aux Volets</h1>\
+//   </header>\
+//   <div class=\"w3-container\">\
+//   <br/>";
+//   // Boucle sur les commandes
+
+//     page+=R"rawliteral(<div class="w3-container"><table  class="w3-table commandes">)rawliteral";
+
+//     // Boucle sur les commandes 
+//     for (size_t i = 0; i < REMOTES_COUNT; i++)
+//     {
+//       String val_i=String(remote_order[i]);
+//       page+=R"rawliteral(<tr><td><header class="w3-container w3-card w3-theme"><h1>)rawliteral";
+//       page+=String(remote_name[remote_order[i]]);
+//       page+=R"rawliteral(</h1></header></td> 
+//             <td><a href="attach?roller=)rawliteral";
+//       page+=val_i;
+//       page+=R"rawliteral(&command=0" class="w3-button w3-red w3-xlarge w3-round-large" ><span><div class="tourne90">&#10144;</div></span></a></td>
+//             <td><a href="command?roller=)rawliteral";
+//       page+=val_i;
+//       page+=R"rawliteral(&command=2" class="w3-button w3-grey w3-xlarge w3-round-large" style="width:100%"><span style="color:white;">&#9634;</span></a></td>
+//             <td><a href="command?roller=)rawliteral";
+//       page+=val_i;
+//       page+=R"rawliteral(&command=1" class="w3-button w3-teal w3-xlarge w3-round-large" style="width:100%"><span><div class="tourne270">&#10144;</div></span></a></td></tr>)rawliteral";
+     
+//     }
+
+
+//   // for (size_t i = 0; i < REMOTES_COUNT; i++)
+//   // {
+//   //     page+="<a href=\"attach?roller=";
+//   //     page+= String(remote_order[i]) ;
+//   //     page+="\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">";
+//   //     page+=remote_name[remote_order[i]];
+//   //     page+="</a><br/>";
+//   // }
+
+
+//   page+="<a href=\"config\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>";
+//   page+=baspage();
+//   page+= FOOTER;
+//   request->send(200, "text/html", page);
+// }
 
 //------------------------------------------------------------------------------------------------------------------------------------
 // Page paramètres WIFI parametrage
@@ -721,9 +792,9 @@ void handleWifi(AsyncWebServerRequest *request) {
     else
     if (request->hasArg("save")) {
       String accesspoint = request->arg("accesspoint");
-      prefs_set("wifi","accesspoint",accesspoint);
+      prefs_set_str("wifi","accesspoint",accesspoint);
       String password = request->arg("password");
-      prefs_set("wifi","password",password); 
+      prefs_set_str("wifi","password",password); 
       request->redirect("/config");
     }
     return;
@@ -733,7 +804,7 @@ void handleWifi(AsyncWebServerRequest *request) {
   if (request->method() == HTTP_GET) {
     String page;
     char accesspoint_str[ACCESSPOINT_LENGTH];
-    prefs_get("wifi","accesspoint",accesspoint_str,ACCESSPOINT_LENGTH,"");
+    prefs_get_str("wifi","accesspoint",accesspoint_str,ACCESSPOINT_LENGTH,"");
     // Construction de la page	
     page = HEADER ;
     if (internet_ok==true)
@@ -786,17 +857,17 @@ void handleReseau(AsyncWebServerRequest *request) {
   if (request->method() == HTTP_POST) {
     if(request->hasArg("ip")){
       String reseau_ip = request->arg("ip");
-      prefs_set("reseau","ip",reseau_ip);
+      prefs_set_str("reseau","ip",reseau_ip);
     }
 
     if(request->hasArg("masque")){
       String reseau_masque = request->arg("masque");
-      prefs_set("reseau","masque",reseau_masque);
+      prefs_set_str("reseau","masque",reseau_masque);
     }
 
     if(request->hasArg("passerelle")){
       String reseau_passerelle = request->arg("passerelle");
-      prefs_set("reseau","passerelle",reseau_passerelle);
+      prefs_set_str("reseau","passerelle",reseau_passerelle);
     }
 
     if(request->hasArg("dhcp")){
@@ -814,11 +885,11 @@ void handleReseau(AsyncWebServerRequest *request) {
   // GET Method
   if (request->method() == HTTP_GET) {
      char reseau_ip[IP_LENGTH];
-     prefs_get("reseau","ip",reseau_ip,IP_LENGTH,"192.168.1.111");
+     prefs_get_str("reseau","ip",reseau_ip,IP_LENGTH,"192.168.1.111");
      char reseau_masque[IP_LENGTH];
-     prefs_get("reseau","masque",reseau_masque,IP_LENGTH,"255.255.255.0");
+     prefs_get_str("reseau","masque",reseau_masque,IP_LENGTH,"255.255.255.0");
      char reseau_passerelle[IP_LENGTH];
-     prefs_get("reseau","passerelle",reseau_passerelle,IP_LENGTH,"192.168.1.254");
+     prefs_get_str("reseau","passerelle",reseau_passerelle,IP_LENGTH,"192.168.1.254");
      boolean reseau_dhcp=prefs_get_bool("reseau","dhcp",true);
 
     String page;
@@ -897,11 +968,11 @@ void handleSecurite(AsyncWebServerRequest *request) {
     if(request->hasArg("activer")){
       if(request->hasArg("mdp")){
         String admin_mdp = request->arg("mdp");
-        prefs_set("admin","mdp",admin_mdp);
+        prefs_set_str("admin","mdp",admin_mdp);
       }
       if(request->hasArg("identifiant")){
         String admin_id = request->arg("identifiant");
-        prefs_set("admin","identifiant",admin_id);
+        prefs_set_str("admin","identifiant",admin_id);
       }      
       prefs_set_bool("admin","active",true);
     }
@@ -915,9 +986,9 @@ void handleSecurite(AsyncWebServerRequest *request) {
   // GET Method
   if (request->method() == HTTP_GET) {
      char admin_mdp[PASSWORD_LENGTH];
-     prefs_get("admin","mdp",admin_mdp,PASSWORD_LENGTH,"admin");
+     prefs_get_str("admin","mdp",admin_mdp,PASSWORD_LENGTH,"admin");
      char admin_id[PASSWORD_LENGTH];
-     prefs_get("admin","identifiant",admin_id,PASSWORD_LENGTH,"admin");
+     prefs_get_str("admin","identifiant",admin_id,PASSWORD_LENGTH,"admin");
 
      boolean admin_actif=prefs_get_bool("admin","active",false);
 
@@ -995,13 +1066,13 @@ void handleApplication(AsyncWebServerRequest *request) {
     if(request->hasArg("key")){
       String key_new = request->arg("key");
       write_output_ln("WEBSERVER - handleApplication - Storing key : " + key_new);
-      prefs_set_key(key_new);
+      prefs_set_str("application","key",key_new);
     }
 
     if(request->hasArg("token")){
       String token_arg = request->arg("token");
       write_output_ln("WEBSERVER - handleApplication - Storing token : " + token_arg);
-      prefs_set_token(token_arg);
+      prefs_set_str("token","token",token_arg);
     }
 
     if(request->hasArg("RTSaddress")){
@@ -1019,8 +1090,9 @@ void handleApplication(AsyncWebServerRequest *request) {
   // GET Method
   if (request->method() == HTTP_GET) {
     char key_str[KEY_LENGTH];
-    prefs_get_key(key_str);
-    prefs_get_token(token);
+    prefs_get_str("application","key",key_str,KEY_LENGTH,"");
+    prefs_get_str("token","token",token,16,"");
+
     unsigned long RTS_address=prefs_get_long("somfy","rts",0x121340);
 
     String page;
@@ -1079,38 +1151,38 @@ void handleClock(AsyncWebServerRequest *request) {
     if(request->hasArg("ntp_server")){
       String ntp_server = request->arg("ntp_server");
       write_output_ln("WEBSERVER - handleApplication - Storing ntp_server : " + ntp_server);
-      prefs_set_ntp_server(ntp_server);
+      prefs_set_str("ntp","ntp_server",ntp_server);
       inittime();
     }
 
     if(request->hasArg("openweathermap_api")){
       String openweathermap_api_new = request->arg("openweathermap_api");
       write_output_ln("WEBSERVER - handleApplication - Storing openweathermap_api : " + openweathermap_api_new);
-      prefs_set("openweathermap","api",openweathermap_api_new);
+      prefs_set_str("openweathermap","api",openweathermap_api_new);
     }
 
     if(request->hasArg("longitude")){
       String lon_new = request->arg("longitude");
       write_output_ln("WEBSERVER - handleApplication - Storing longitude : " + lon_new);
-      prefs_set("openweathermap","lon",lon_new);
+      prefs_set_str("openweathermap","lon",lon_new);
     }
 
     if(request->hasArg("latitude")){
       String lat_new = request->arg("latitude");
       write_output_ln("WEBSERVER - handleApplication - Storing latitude : " + lat_new);
-      prefs_set("openweathermap","lat",lat_new);
+      prefs_set_str("openweathermap","lat",lat_new);
     }
 
     if(request->hasArg("jour")){
       String jour = request->arg("jour");
       write_output_ln("WEBSERVER - handleApplication - Storing jour : " + jour);
-      prefs_set("heure","jour",jour);
+      prefs_set_str("heure","jour",jour);
     }
 
     if(request->hasArg("nuit")){
       String nuit = request->arg("nuit");
       write_output_ln("WEBSERVER - handleApplication - Storing nuit : " + nuit);
-      prefs_set("heure","nuit",nuit);
+      prefs_set_str("heure","nuit",nuit);
     }
 
     // A voir pour le faire si on le demande 
@@ -1128,20 +1200,19 @@ void handleClock(AsyncWebServerRequest *request) {
     uint8_t hours=0;
     uint8_t minutes=0;
 
-    
     char ntp_server[NTP_SERVER_LENGTH];
-    prefs_get_ntp_server(ntp_server);
+    prefs_get_str("ntp","ntp_server",ntp_server,NTP_SERVER_LENGTH,"pool.ntp.org");
 
     char openweathermap_api[50];
     char lon[10]="";
     char lat[10]="";
     char nuit[4]="";
     char jour[4]="";
-    prefs_get("openweathermap","api",openweathermap_api,50,"");
-    prefs_get("openweathermap","lon",lon,9,"2.3333");
-    prefs_get("openweathermap","lat",lat,9,"48.8666");
-    prefs_get("heure","jour",jour,4,"30");
-    prefs_get("heure","nuit",nuit,4,"30");
+    prefs_get_str("openweathermap","api",openweathermap_api,50,"");
+    prefs_get_str("openweathermap","lon",lon,9,"2.3333");
+    prefs_get_str("openweathermap","lat",lat,9,"48.8666");
+    prefs_get_str("heure","jour",jour,4,"30");
+    prefs_get_str("heure","nuit",nuit,4,"30");
  
     String page;
 
@@ -1210,7 +1281,7 @@ void handleClock(AsyncWebServerRequest *request) {
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleApi(AsyncWebServerRequest *request) {
     identification(request);
-    prefs_get_token(token);
+    prefs_get_str("token","token",token,16,"");
     write_output_ln("WEBSERVER - handleAPI - Execution commande");
 
   if (strlen(token)==0) {
@@ -1320,11 +1391,7 @@ void ws_config(int rescue_mode) {
   }
   else {
     strcpy(key, "");
-    prefs_get_key(key);
-    // write_output_ln("Loaded application key: " + String(key));
-    // prefs_get_token(token);
-    // write_output_ln("Loaded API token: ###########");
-    // write_output_ln("Loaded API token: " + String(token));
+    prefs_get_str("application","key",key,KEY_LENGTH,"");
   }
   char url[40];
 

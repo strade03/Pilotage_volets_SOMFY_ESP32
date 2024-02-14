@@ -7,9 +7,9 @@
 #include <WiFiClientSecure.h> 
 #include <HTTPClient.h>  
 
-// Pour calculer le décalage horaire et l'heure d'été/hiver. // TODO voir comment améliorer 
-const long  gmtOffset_sec = 3600;
-const int   daylightOffset_sec = 3600;
+// Pour calculer le décalage horaire et l'heure d'été/hiver. 
+// const long  gmtOffset_sec = 3600;
+// const int   daylightOffset_sec = 3600;
 
 char ntpServer[NTP_SERVER_LENGTH];
 bool time_set = false;
@@ -29,8 +29,9 @@ uint8_t minute_maj=0;
 extern bool time_set;
 
 bool inittime(void) {
-  prefs_get_ntp_server(ntpServer);
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  prefs_get_str("ntp","ntp_server",ntpServer,NTP_SERVER_LENGTH,"pool.ntp.org");
+  //configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  configTzTime("CET-1CEST-2,M3.5.0/02:00:00,M10.5.0/03:00:00", ntpServer); // Autre solution
 
   struct tm timeinfo;
   if(!getLocalTime(&timeinfo)){
@@ -108,20 +109,20 @@ uint8_t heure_soleil(String type) // type = coucher ou lever
   char nuit[4];
 
   if ((type=="lever") || (type=="jour")) 
-    prefs_get("meteo","sunrise",timestamp,12,"");
+    prefs_get_str("meteo","sunrise",timestamp,12,"");
   else
   if ((type=="coucher") || (type=="nuit"))
-    prefs_get("meteo","sunset",timestamp,12,"");
-  prefs_get("meteo","timezone",timezone,10,"");
+    prefs_get_str("meteo","sunset",timestamp,12,"");
+  prefs_get_str("meteo","timezone",timezone,10,"");
   if (timestamp!="") {
     if (type=="nuit") {
-      prefs_get("heure","nuit",nuit,4,"30");
+      prefs_get_str("heure","nuit",nuit,4,"30");
       int hours_nuit = 60*floor(atoi(nuit) / 60.0);
       return( (3600*hours_nuit+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
     }
     else
     if (type=="jour") {
-      prefs_get("heure","jour",jour,4,"30");
+      prefs_get_str("heure","jour",jour,4,"30");
       int hours_jour = 60*floor(atoi(jour) / 60.0);
       return( (-3600*hours_jour+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
     }
@@ -141,19 +142,19 @@ uint8_t minute_soleil(String type) // type = coucher ou lever
   char jour[4];
   char nuit[4];
   if ((type=="lever") || (type=="jour"))
-    prefs_get("meteo","sunrise",timestamp,12,"");
+    prefs_get_str("meteo","sunrise",timestamp,12,"");
   else
   if ((type=="coucher") || (type=="nuit"))
-    prefs_get("meteo","sunset",timestamp,12,"");
+    prefs_get_str("meteo","sunset",timestamp,12,"");
   if (timestamp!="")
     if (type=="nuit") {
-      prefs_get("heure","nuit",nuit,4,"30");
+      prefs_get_str("heure","nuit",nuit,4,"30");
       int minutes_nuit = atoi(nuit) % 60;
       return ( (60*minutes_nuit+atoi(timestamp))/ 60 % 60 );
     }
     else
     if (type=="jour") {
-      prefs_get("heure","jour",jour,4,"30");
+      prefs_get_str("heure","jour",jour,4,"30");
       int minutes_jour = atoi(jour) % 60;
       return ( (-60*minutes_jour+atoi(timestamp))/ 60 % 60 );
     }
@@ -227,14 +228,14 @@ void extrationJSON(String reponse){
   gettime(&hour_maj, &minute_maj);
 // Sauvegarde dans la mémoire flash l'heure de coucher et de lever du soleil si modification
   char sunrise_base[12] = "";
-  prefs_get("meteo","sunrise",sunrise_base,12,"");
+  prefs_get_str("meteo","sunrise",sunrise_base,12,"");
   char sunset_base[12] = "";
-  prefs_get("meteo","sunset",sunset_base,12,"");
+  prefs_get_str("meteo","sunset",sunset_base,12,"");
 
   if (strcmp(sunrise.c_str(), sunrise_base)!=0)
-    prefs_set("meteo","sunrise",sunrise);
+    prefs_set_str("meteo","sunrise",sunrise);
   if (strcmp(sunset.c_str(), sunset_base)!=0)
-    prefs_set("meteo","sunset",sunset);
+    prefs_set_str("meteo","sunset",sunset);
 }
 
 
@@ -244,9 +245,9 @@ bool get_meteo()
   char appid[50];
   char lon[10];
   char lat[10];
-  prefs_get("openweathermap","api",appid,50,"");
-  prefs_get("openweathermap","lon",lon,10,"2.3333");
-  prefs_get("openweathermap","lat",lat,10,"48.8666");
+  prefs_get_str("openweathermap","api",appid,50,"");
+  prefs_get_str("openweathermap","lon",lon,10,"2.3333");
+  prefs_get_str("openweathermap","lat",lat,10,"48.8666");
 
     const String request = "https://api.openweathermap.org/data/2.5/weather?lat=" + String(lat) + "&lon=" + String(lon) + "&units=metric&lang=fr&appid=" + String(appid) ; // requête http
     
