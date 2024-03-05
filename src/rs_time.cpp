@@ -117,14 +117,14 @@ uint8_t heure_soleil(String type) // type = coucher ou lever
   if (timestamp!="") {
     if (type=="nuit") {
       prefs_get_str("heure","nuit",nuit,4,"30");
-      int hours_nuit = 60*floor(atoi(nuit) / 60.0);
-      return( (3600*hours_nuit+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+      int hours_nuit = 60*atoi(nuit);
+      return( (hours_nuit+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
     }
     else
     if (type=="jour") {
       prefs_get_str("heure","jour",jour,4,"30");
-      int hours_jour = 60*floor(atoi(jour) / 60.0);
-      return( (-3600*hours_jour+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+      int hours_jour = 60*atoi(jour) ;
+      return( (-hours_jour+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
     }
     else
       return ( (atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
@@ -149,13 +149,13 @@ uint8_t minute_soleil(String type) // type = coucher ou lever
   if (timestamp!="")
     if (type=="nuit") {
       prefs_get_str("heure","nuit",nuit,4,"30");
-      int minutes_nuit = atoi(nuit) % 60;
+      int minutes_nuit = atoi(nuit) ;
       return ( (60*minutes_nuit+atoi(timestamp))/ 60 % 60 );
     }
     else
     if (type=="jour") {
       prefs_get_str("heure","jour",jour,4,"30");
-      int minutes_jour = atoi(jour) % 60;
+      int minutes_jour = atoi(jour);
       return ( (-60*minutes_jour+atoi(timestamp))/ 60 % 60 );
     }
     else
