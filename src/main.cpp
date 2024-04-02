@@ -66,6 +66,14 @@ void setup() {
   refresh_programTask(); // lance les taches des programmes  
 
   write_output_ln("End setup function");
+
+// // Si bug pour effacer tous les enregistrements des telecommandes.
+// Preferences prefs;
+// prefs.begin("SomfyRTS", false);
+// // Supprimer tous les enregistrements associés à la clé "SomfyRTS"
+// prefs.clear();
+// prefs.end();
+
 }
 
 int Etat_bouton = 0;

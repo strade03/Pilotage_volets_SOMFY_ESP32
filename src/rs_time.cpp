@@ -104,7 +104,7 @@ String keysToStr(String reponse,String chaine)
 uint8_t heure_soleil(String type) // type = coucher ou lever
 {
   char timestamp[12];
-  char timezone[10];
+//  char timezone[10];
   char jour[4];
   char nuit[4];
 
@@ -113,21 +113,24 @@ uint8_t heure_soleil(String type) // type = coucher ou lever
   else
   if ((type=="coucher") || (type=="nuit"))
     prefs_get_str("meteo","sunset",timestamp,12,"");
-  prefs_get_str("meteo","timezone",timezone,10,"");
+//  prefs_get_str("meteo","timezone",timezone,10,"");
   if (timestamp!="") {
     if (type=="nuit") {
       prefs_get_str("heure","nuit",nuit,4,"30");
       int hours_nuit = 60*atoi(nuit);
-      return( (hours_nuit+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+      //return( (hours_nuit+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+      return( (hours_nuit+atoi(timestamp)+timezone.toInt()) / 3600 % 24) ;
     }
     else
     if (type=="jour") {
       prefs_get_str("heure","jour",jour,4,"30");
       int hours_jour = 60*atoi(jour) ;
-      return( (-hours_jour+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+     // return( (-hours_jour+atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+      return( (-hours_jour+atoi(timestamp)+timezone.toInt()) / 3600 % 24) ;
     }
     else
-      return ( (atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+     // return ( (atoi(timestamp)+atoi(timezone)) / 3600 % 24) ;
+      return ( (atoi(timestamp)+timezone.toInt()) / 3600 % 24) ;
   }
   else
     return(-1);
@@ -138,7 +141,7 @@ uint8_t minute_soleil(String type) // type = coucher ou lever
 {
   uint8_t h=0;
   char timestamp[12];
-  char timezone[10];
+ // char timezone[10];
   char jour[4];
   char nuit[4];
   if ((type=="lever") || (type=="jour"))
