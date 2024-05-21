@@ -178,3 +178,20 @@ void SomfyRTS::prog( int remote ) {
   this->_sendSomfy(remote, PROG);
   
 }
+
+unsigned int SomfyRTS::getRolling( int remote ) {
+ unsigned int  Code;
+  prefs.begin("SomfyRTS", false);
+  char key[10];
+  snprintf(key, 10, "%lu", _RTS_address+remote);
+  Code = prefs.getUInt(key);
+  return(Code);
+}
+
+void SomfyRTS::setRolling( int remote, unsigned int rolling ) {
+  prefs.begin("SomfyRTS", false);
+  char key[10];
+  snprintf(key, 10, "%lu", _RTS_address+remote);
+  prefs.putUInt(key, rolling);
+  
+}

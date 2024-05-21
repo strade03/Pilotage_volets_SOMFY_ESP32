@@ -196,8 +196,8 @@ void handleConfig(AsyncWebServerRequest *request) {
   <a href="clock" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Heure</a><br>
   <a href="application" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Options avancées</a><br>
   <br>)rawliteral";
-  // page+=R"rawliteral(<a href="debug" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Mode debug telecommande</a><br>
-  // <br>)rawliteral";
+  page+=R"rawliteral(<a href="debug" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Mode debug telecommande</a><br>
+  <br>)rawliteral";
   page+=R"rawliteral(<a href="\" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Retour</a><br/>
   <a href="reboot" class="w3-button w3-red w3-xxlarge w3-round-large w3-block"><b>Reboot</b></a><br>
   )rawliteral";
@@ -294,7 +294,7 @@ void handleCommand(AsyncWebServerRequest *request) {
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleDebug(AsyncWebServerRequest *request) {
   identification(request);
-  write_output_ln("WEBSERVER - handleCommand - Serving command page");
+  write_output_ln("WEBSERVER - handleDebug - Serving command page");
   // Traitement de la commande roller=1&command=2 (N° volet, Commande 0 descendre, 1: monte, 2: Stop/My)
   if (request->hasArg("roller") && request->hasArg("command")) {
     String roller_str = request->arg("roller");
@@ -302,19 +302,29 @@ void handleDebug(AsyncWebServerRequest *request) {
     int roller = roller_str.toInt();
     int command = command_str.toInt();
     if (command == 0) {
-        write_output_ln("WEBSERVER - handleCommand - Descente Volet : " + String(roller));
+        write_output_ln("WEBSERVER - handleDebug - Descente Volet : " + String(roller));
         movedown(roller);
       }
       else if (command == 1) {
-        write_output_ln("WEBSERVER - handleCommand - Monte Volet : " + String(roller));
+        write_output_ln("WEBSERVER - handleDebug - Monte Volet : " + String(roller));
         moveup(roller);
       }
       else if (command == 2) {
-        write_output_ln("WEBSERVER - handleCommand - Stop Volet : " + String(roller));
+        write_output_ln("WEBSERVER - handleDebug - Stop Volet : " + String(roller));
         stop(roller);
     }
-    redirect(request,(char*)"/command"); // rappel de la fonction pour afficher la page
+    redirect(request,(char*)"/debug"); // rappel de la fonction pour afficher la page
     return;
+  }  else if (request->hasArg("roller") && request->hasArg("rolling_value")) {
+        String roller_str = request->arg("roller");
+        String rollingVal = request->arg("rolling_value");
+        int roller = roller_str.toInt();
+        unsigned int rollingValue = rollingVal.toInt();
+
+        setRolling(roller,rollingValue);
+
+        redirect(request,(char*)"/debug"); // rappel de la fonction pour afficher la page
+        return;
   }
   
   if (request->method() == HTTP_GET) { 
@@ -323,25 +333,34 @@ void handleDebug(AsyncWebServerRequest *request) {
     //page= page + STYLE_w3 +STYLE_Commande ;
     //page= page + String(STYLE_w3) ;
     // page= page + String(STYLE_Commande) ;
-    String page1=R"rawliteral(<div class="w3-container"><table  class="w3-table commandes">)rawliteral";
+    String page1=R"rawliteral(<div class="w3-container">Vous pouvez ajuster le Rolling si besoin. Utiliser avec précaution<table  class="w3-table commandes">)rawliteral";
 
     // Boucle sur les commandes 
     for (size_t i = 0; i < REMOTES_COUNT; i++)
     {
       String val_i=String(remote_order[i]);
+      String rollingValue = String(getRolling(remote_order[i]));
       page1+=R"rawliteral(<tr><td><header class="w3-container w3-card w3-theme"><h1>)rawliteral";
       page1+=String(remote_name[remote_order[i]]);
       page1+=R"rawliteral(</h1></header></td> 
-            <td><a href="command?roller=)rawliteral";
+            <td><a href="debug?roller=)rawliteral";
       page1+=val_i;
       page1+=R"rawliteral(&command=0" class="w3-button w3-red w3-xlarge w3-round-large" style="width:100%"><span><div class="tourne90">&#10144;</div></span></a></td>
-            <td><a href="command?roller=)rawliteral";
+            <td><a href="debug?roller=)rawliteral";
       page1+=val_i;
       page1+=R"rawliteral(&command=2" class="w3-button w3-grey w3-xlarge w3-round-large" style="width:100%"><span style="color:white;">&#9634;</span></a></td>
-            <td><a href="command?roller=)rawliteral";
-      page1+=val_i;
-      page1+=R"rawliteral(&command=1" class="w3-button w3-teal w3-xlarge w3-round-large" style="width:100%"><span><div class="tourne270">&#10144;</div></span></a></td></tr>)rawliteral";
+            <td>)rawliteral";
+
+      page1 += R"rawliteral(<form action="/debug" method="post" style="display:flex;"><input type="text" name="rolling_value" value=")rawliteral";
+      page1 += rollingValue;
+      page1 += R"rawliteral(" style="flex:1;"><input type="hidden" name="roller" value=")rawliteral";
+      page1 += val_i;
+      page1 += R"rawliteral("><button type="submit" class="w3-button w3-green w3-xlarge w3-round-large" style="flex-shrink:0;">Valider</button></form></td></tr>)rawliteral";
+
+      page1+=R"rawliteral(</td></tr>)rawliteral";
      
+    Serial.print("Rolling : ");
+    Serial.println(getRolling(remote_order[i]));
     }
     size_t totalLength;
     if (internet_ok==true)

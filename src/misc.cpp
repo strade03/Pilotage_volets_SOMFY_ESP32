@@ -39,10 +39,17 @@ void prog(int roller) {
   
 }
 
-
 void stop(int roller) {
   TXLEDOnfor1s();
   somfy.stop(roller);  
+}
+
+unsigned int getRolling(int roller) {
+  return(somfy.getRolling(roller));
+}
+
+void setRolling(int roller, unsigned int rolling) {  
+  somfy.setRolling( roller, rolling ) ;  
 }
 
 /// Controle de l'espace mémoire

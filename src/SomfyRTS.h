@@ -18,6 +18,8 @@ class SomfyRTS {
     void stop( int remote );
     void prog( int remote );
     void setRTS_address(unsigned long RTS_address);
+    unsigned int getRolling( int remote );
+    void setRolling( int remote,unsigned int rolling );
 
   private:
     void _initRadio();

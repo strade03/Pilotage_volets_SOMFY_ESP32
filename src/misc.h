@@ -11,6 +11,8 @@ void moveup(int roller);
 void movedown(int roller);
 void prog(int roller);
 void stop(int roller);
+unsigned int getRolling(int roller);
+void setRolling(int roller, unsigned int rolling);
 
 int getTotalRam();
 int getFreeRam();
