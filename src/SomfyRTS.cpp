@@ -44,10 +44,12 @@ void SomfyRTS::_buildFrameSomfy() {
   prefs.begin("SomfyRTS", false);
 
   char key[10];
-  snprintf(key, 10, "%lu", _RTS_address);
+  snprintf(key, 10, "%lu", _RTS_address+_virtualRemoteNumber);
   Code = prefs.getUInt(key);
-  // Serial.print("SomfyRTS::_buildFrameSomfy - Code read : ");
-  // Serial.println(Code);
+  //  Serial.print("SomfyRTS::_buildFrameSomfy - Code read : ");
+  //  Serial.print(key);
+  //  Serial.print(" = ");
+  //  Serial.println(Code);
 
   frame[0] = 0xA7; // Encryption key. Doesn't matter much
   frame[1] = _actionCommand << 4;  // Which button did  you press? The 4 LSB will be the checksum
@@ -56,7 +58,7 @@ void SomfyRTS::_buildFrameSomfy() {
   frame[4] = _RTS_address + _virtualRemoteNumber >> 16; // Remote address
   frame[5] = _RTS_address + _virtualRemoteNumber >>  8; // Remote address
   frame[6] = _RTS_address + _virtualRemoteNumber;     // Remote address
-
+    
   // Checksum calculation: a XOR of all the nibbles
   byte checksum = 0;
   for (byte i = 0; i < 7; i++) {
@@ -77,6 +79,12 @@ void SomfyRTS::_buildFrameSomfy() {
   // Serial.print("SomfyRTS::_buildFrameSomfy - Code write : ");
   // Serial.println(Code);
   prefs.putUInt(key, Code+1);
+   
+  //  Code = prefs.getUInt(key);
+  //  Serial.print("SomfyRTS::_buildFrameSomfy - Code write : ");
+  //  Serial.print(key);
+  //  Serial.print(" = ");
+  //  Serial.println(Code);
   
 }
 

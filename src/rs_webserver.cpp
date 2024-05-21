@@ -195,8 +195,10 @@ void handleConfig(AsyncWebServerRequest *request) {
   <a href="securite" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Sécurité</a><br>
   <a href="clock" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Heure</a><br>
   <a href="application" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Options avancées</a><br>
-  <br>
-  <a href="\" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Retour</a><br/>
+  <br>)rawliteral";
+  // page+=R"rawliteral(<a href="debug" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Mode debug telecommande</a><br>
+  // <br>)rawliteral";
+  page+=R"rawliteral(<a href="\" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Retour</a><br/>
   <a href="reboot" class="w3-button w3-red w3-xxlarge w3-round-large w3-block"><b>Reboot</b></a><br>
   )rawliteral";
   //}
@@ -210,6 +212,87 @@ void handleConfig(AsyncWebServerRequest *request) {
 // Page Commande = télécommandes virtuelles => commandes
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleCommand(AsyncWebServerRequest *request) {
+  identification(request);
+  write_output_ln("WEBSERVER - handleCommand - Serving command page");
+  // Traitement de la commande roller=1&command=2 (N° volet, Commande 0 descendre, 1: monte, 2: Stop/My)
+  if (request->hasArg("roller") && request->hasArg("command")) {
+    String roller_str = request->arg("roller");
+    String command_str = request->arg("command");
+    int roller = roller_str.toInt();
+    int command = command_str.toInt();
+    if (command == 0) {
+        write_output_ln("WEBSERVER - handleCommand - Descente Volet : " + String(roller));
+        movedown(roller);
+      }
+      else if (command == 1) {
+        write_output_ln("WEBSERVER - handleCommand - Monte Volet : " + String(roller));
+        moveup(roller);
+      }
+      else if (command == 2) {
+        write_output_ln("WEBSERVER - handleCommand - Stop Volet : " + String(roller));
+        stop(roller);
+    }
+    redirect(request,(char*)"/command"); // rappel de la fonction pour afficher la page
+    return;
+  }
+  
+  if (request->method() == HTTP_GET) { 
+    // String page;
+    // page= String(HEADER) ;
+    //page= page + STYLE_w3 +STYLE_Commande ;
+    //page= page + String(STYLE_w3) ;
+    // page= page + String(STYLE_Commande) ;
+    String page1=R"rawliteral(<div class="w3-container"><table  class="w3-table commandes">)rawliteral";
+
+    // Boucle sur les commandes 
+    for (size_t i = 0; i < REMOTES_COUNT; i++)
+    {
+      String val_i=String(remote_order[i]);
+      page1+=R"rawliteral(<tr><td><header class="w3-container w3-card w3-theme"><h1>)rawliteral";
+      page1+=String(remote_name[remote_order[i]]);
+      page1+=R"rawliteral(</h1></header></td> 
+            <td><a href="command?roller=)rawliteral";
+      page1+=val_i;
+      page1+=R"rawliteral(&command=0" class="w3-button w3-red w3-xlarge w3-round-large" style="width:100%"><span><div class="tourne90">&#10144;</div></span></a></td>
+            <td><a href="command?roller=)rawliteral";
+      page1+=val_i;
+      page1+=R"rawliteral(&command=2" class="w3-button w3-grey w3-xlarge w3-round-large" style="width:100%"><span style="color:white;">&#9634;</span></a></td>
+            <td><a href="command?roller=)rawliteral";
+      page1+=val_i;
+      page1+=R"rawliteral(&command=1" class="w3-button w3-teal w3-xlarge w3-round-large" style="width:100%"><span><div class="tourne270">&#10144;</div></span></a></td></tr>)rawliteral";
+     
+    }
+    size_t totalLength;
+    if (internet_ok==true)
+      totalLength = strlen(HEADER) + strlen(STYLE_w3) + strlen(STYLE_Commande) + page1.length() +  150;      
+    else
+      totalLength = strlen(HEADER) + strlen(STYLE_w3_light) + strlen(STYLE_Commande) + page1.length() +  150;      
+
+    char* lapage = new char[totalLength];
+    memset(lapage, 0, totalLength);
+    strcat(lapage, HEADER);
+    if (internet_ok==true)
+      strcat(lapage, STYLE_w3);
+    else
+      strcat(lapage, STYLE_w3_light);
+    strcat(lapage, STYLE_Commande);
+    strcat(lapage, page1.c_str());
+    strcat(lapage, "</table><br><a href=\"\\\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a></div>");
+    String tmp= String(lapage);
+    tmp+=baspage();
+    tmp+=FOOTER;
+    // strcat(lapage, FOOTER);
+    // Serial.printf("Free heap: %u\n", ESP.getFreeHeap());
+    // request->send(200, "text/html",  String(lapage));
+    request->send(200, "text/html",  tmp);
+    delete[] lapage;
+   }      
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------
+// Page DEBUG Commande = télécommandes virtuelles => commandes Affiche la valeur du Rolling que l'on peut modifier
+//------------------------------------------------------------------------------------------------------------------------------------
+void handleDebug(AsyncWebServerRequest *request) {
   identification(request);
   write_output_ln("WEBSERVER - handleCommand - Serving command page");
   // Traitement de la commande roller=1&command=2 (N° volet, Commande 0 descendre, 1: monte, 2: Stop/My)
@@ -1399,6 +1482,8 @@ void ws_config(int rescue_mode) {
   server.on(url, handleMain);
   get_obfuscated_url(url, key, (char*)"/command");
   server.on(url, handleCommand);
+    get_obfuscated_url(url, key, (char*)"/debug");
+  server.on(url, handleDebug);
   get_obfuscated_url(url, key, (char*)"/config");
   server.on(url, handleConfig);
     get_obfuscated_url(url, key, (char*)"/wifi");
