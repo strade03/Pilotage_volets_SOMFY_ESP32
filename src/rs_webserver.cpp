@@ -12,6 +12,7 @@
 #include "rs_web_header_footer.h"
 #include "SomfyRTS.h"
 #include "rs_wifi.h"
+#include "wake_on_lan.h"
 
 char key[10];
 char token[16]; // Token pour valider l'appel de l'API
@@ -118,7 +119,10 @@ void handleMain(AsyncWebServerRequest *request) {
       page= page + STYLE_w3 + STYLE_Meteo + HEADER_close;
     else
       page= page + STYLE_w3_light + STYLE_Meteo + HEADER_close;
-  
+  char ip_serve[18];
+  char adr_mac[20];
+  prefs_get_str("wol","adr_mac",adr_mac,20,"");
+  prefs_get_str("wol","ip_serve",ip_serve,18,"");
   //if (rescue_mode==1) {
   page+=R"rawliteral(<header class="w3-container w3-card w3-theme">
   <h1>Gestion Volets Roulants</h1>
@@ -126,10 +130,15 @@ void handleMain(AsyncWebServerRequest *request) {
   <div class="w3-container" style="margin-bottom:50px">
   <br/>
   <a href="command" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Télécommandes</a><br/>
-  <a href="prgmlist" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Programmation</a><br/>
-  <br/>
+  <a href="prgmlist" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Programmation</a><br/>)rawliteral";
+  if (strlen(ip_serve) > 0 && strlen(adr_mac) > 0) {
+    page+=R"rawliteral(<a href="actionwol" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Wake On Line Serveur</a><br/>)rawliteral";
+  }
+  page+=R"rawliteral(<br/>
   <a href="config" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Configurer</a><br/>  
   )rawliteral";
+
+
   if (!rescue_mode){
     char sunrise[12] = "";
     prefs_get_str("meteo","sunrise",sunrise,12,"");
@@ -164,7 +173,7 @@ void handleMain(AsyncWebServerRequest *request) {
   page+="</body></html>";
 
   
-
+// TODO si mode rescue_mode on annule la task de reboot automatique comme la page c'est affiché
 
   request->send(200, "text/html", page);
 }
@@ -195,6 +204,7 @@ void handleConfig(AsyncWebServerRequest *request) {
   <a href="securite" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Sécurité</a><br>
   <a href="clock" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Heure</a><br>
   <a href="application" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Options avancées</a><br>
+  <a href="wol" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Option Wake On Lan</a><br>
   <br>)rawliteral";
   page+=R"rawliteral(<a href="debug" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Mode debug telecommande</a><br>
   <br>)rawliteral";
@@ -202,6 +212,7 @@ void handleConfig(AsyncWebServerRequest *request) {
   <a href="reboot" class="w3-button w3-red w3-xxlarge w3-round-large w3-block"><b>Reboot</b></a><br>
   )rawliteral";
   //}
+  
   page +=baspage();
   page+=  FOOTER;
 
@@ -1233,7 +1244,83 @@ page+=FOOTER;
   }
 }
 
+//------------------------------------------------------------------------------------------------------------------------------------
+// Page paramètres Wake On LINE permettant d'ajouter un bouton à l'accueil pour reveiller une machine via le réseau
+//------------------------------------------------------------------------------------------------------------------------------------
+void handleWOL(AsyncWebServerRequest *request) {
+  identification(request);
+  write_output_ln("WEBSERVER - handleWOL - Serving WOL page");
 
+  if (request->method() == HTTP_POST) {
+    if(request->hasArg("adr_mac")){
+      String adr_mac = request->arg("adr_mac");
+      write_output_ln("WEBSERVER - handleWOL - Storing adr_mac : " + adr_mac);
+      prefs_set_str("wol","adr_mac",adr_mac);
+    }
+
+    if(request->hasArg("ip_serve")){
+      String ip_arg = request->arg("ip_serve");
+      write_output_ln("WEBSERVER - handleWOL - Storing IP : " + ip_arg);
+      prefs_set_str("wol","ip_serve",ip_arg);
+    }
+
+    redirect(request, (char*)"/config");
+    return;
+  }
+
+
+  // GET Method
+  if (request->method() == HTTP_GET) {
+    char ip_serve[18];
+    char adr_mac[20];
+    prefs_get_str("wol","adr_mac",adr_mac,20,"");
+    prefs_get_str("wol","ip_serve",ip_serve,18,"");
+
+    String page;
+    page = HEADER ;
+    if (internet_ok==true)
+        page= page + STYLE_w3 + HEADER_close;
+    else
+        page= page + STYLE_w3_light + HEADER_close;
+
+    page= page + "<header class=\"w3-container w3-card w3-theme\">\
+<h1>Wake on LAN - Paramètres de la machine à réveiller</h1>\
+</header>\
+<div class=\"w3-container\">\
+<form action=\"wol\" method=\"post\">\
+  <p>\
+  <label class=\"w3-text-teal w3-xxlarge\"><b>Adresse MAC (xx:xx:xx:xx:xx:xx)</b></label>\
+  <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"adr_mac\" name=\"adr_mac\" type=\"text\" value=\""+adr_mac+"\"></p>\
+<p>\
+<hr>\
+  <label class=\"w3-text-teal w3-xxlarge\"><b>Adresse IP de diffusion pour le réseau (192.168.1.255) </b></label>\
+  <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"ip_serve\" name=\"ip_serve\" type=\"text\" value=\""+ip_serve+"\"></p>\
+<br>\
+<input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
+</form>\
+<br/>\
+<a href=\"config\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>";
+page+=baspage();
+page+=FOOTER;
+
+    request->send(200, "text/html", page);
+    return;
+  }
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+// Page Actionne  Wake On LINE 
+//------------------------------------------------------------------------------------------------------------------------------------
+void handleActionWOL(AsyncWebServerRequest *request) {
+  identification(request);
+  write_output_ln("WEBSERVER - handleActionWOL - Serving ActionWOL page");
+    char ip_serve[18];
+    char adr_mac[20];
+    prefs_get_str("wol","adr_mac",adr_mac,20,"");
+    prefs_get_str("wol","ip_serve",ip_serve,18,"");
+    sendWOL(adr_mac,ip_serve);
+    redirect(request,(char*)"/"); // rappel de la fonction pour afficher la page d'acceuil
+    return;
+}
 
 //------------------------------------------------------------------------------------------------------------------------------------
 // Page Horloge  Synchronysation 
@@ -1509,6 +1596,10 @@ void ws_config(int rescue_mode) {
   server.on(url, handleWifi);
   get_obfuscated_url(url, key, (char*)"/reseau");
   server.on(url, handleReseau);
+  get_obfuscated_url(url, key, (char*)"/wol");
+  server.on(url, handleWOL);
+  get_obfuscated_url(url, key, (char*)"/actionwol");
+  server.on(url, handleActionWOL);
   get_obfuscated_url(url, key, (char*)"/securite");
   server.on(url, handleSecurite);
   get_obfuscated_url(url, key, (char*)"/application");  // adresse d'une application externe => c'est ici que l'on mettra les pramètrage lien sur le site

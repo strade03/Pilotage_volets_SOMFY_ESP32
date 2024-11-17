@@ -39,6 +39,9 @@ void setup() {
   if (rescue_mode) {
     start_softap();           // Mode AP
     enable_wifiBlinkTask();   // Clignotement STATUS_LED_PIN 
+    // TODO activer une task qui reboot au bout de 5 min. Si la page d'accueil est affichée on annule
+    // Cas ou un reboot de la box coupe aussi l'alimentation du boitier, dans ce cas si pas on accède pas à la page de config on retente la connection
+    // Gérer peut être un compteur de nombre de reboot pour l'empecher au bout de 5 ou 6 fois !
   }
   else {
     scanner_reseau();

@@ -190,7 +190,7 @@ void start_softap(void) {
   delay(2000);
   //WiFi.setHostname("voletsroulants"); Inutile
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-  //WiFi.softAP("VoletsRoulants");
+  
   WiFi.softAP("VoletsRoulants");
   dnsServer.start(53, "*", apIP);  //Cause a reboot in softAP mode  
 }
