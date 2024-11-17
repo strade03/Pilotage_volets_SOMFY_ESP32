@@ -132,7 +132,7 @@ void handleMain(AsyncWebServerRequest *request) {
   <a href="command" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Télécommandes</a><br/>
   <a href="prgmlist" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Programmation</a><br/>)rawliteral";
   if (strlen(ip_serve) > 0 && strlen(adr_mac) > 0) {
-    page+=R"rawliteral(<a href="actionwol" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Wake On Line Serveur</a><br/>)rawliteral";
+    page+=R"rawliteral(<a href="actionwol" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Wake On LAN Serveur</a><br/>)rawliteral";
   }
   page+=R"rawliteral(<br/>
   <a href="config" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Configurer</a><br/>  
@@ -1245,7 +1245,7 @@ page+=FOOTER;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page paramètres Wake On LINE permettant d'ajouter un bouton à l'accueil pour reveiller une machine via le réseau
+// Page paramètres Wake On LAN permettant d'ajouter un bouton à l'accueil pour reveiller une machine via le réseau
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleWOL(AsyncWebServerRequest *request) {
   identification(request);
@@ -1293,7 +1293,7 @@ void handleWOL(AsyncWebServerRequest *request) {
   <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"adr_mac\" name=\"adr_mac\" type=\"text\" value=\""+adr_mac+"\"></p>\
 <p>\
 <hr>\
-  <label class=\"w3-text-teal w3-xxlarge\"><b>Adresse IP de diffusion pour le réseau (192.168.1.255) </b></label>\
+  <label class=\"w3-text-teal w3-xxlarge\"><b>Adresse IP de diffusion pour le réseau (ex: 192.168.1.255) </b></label>\
   <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"ip_serve\" name=\"ip_serve\" type=\"text\" value=\""+ip_serve+"\"></p>\
 <br>\
 <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
@@ -1308,7 +1308,7 @@ page+=FOOTER;
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-// Page Actionne  Wake On LINE 
+// Page Actionne  Wake On LAN 
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleActionWOL(AsyncWebServerRequest *request) {
   identification(request);
