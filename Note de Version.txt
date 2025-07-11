@@ -1,6 +1,6 @@
 V1.4 
 Dernière correction :
-11/07/2025 (Sauvegarde dans le dossier V1.4) Aidé de Google aiStudio
+11/07/2025 (Sauvegarde dans le dossier V1.4)
 - Correction de la gestion de reconnexion Wifi suite perte de la box.
 - Il tente plusieurs fois si personne n'est connecté en direct dessus
 
