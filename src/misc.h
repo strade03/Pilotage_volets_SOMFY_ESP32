@@ -21,5 +21,6 @@ int getFreeFlash();
 int getCpuFrequency();
 void setCpuFrequency(int f);
 
+extern int rescue_mode; 
 
 #endif //MISC_H_
