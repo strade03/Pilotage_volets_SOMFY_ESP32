@@ -21,4 +21,8 @@ void TXLEDOnfor1s(void);
 void TXLEDOff(void);
 void execute_runner(void);
 
+void initDuckDNSTask_callback(void);
+void enable_initDuckDNSTask(void);
+void disable_initDuckDNSTask(void);
+
 #endif //SCHEDULEDTASKS_H_

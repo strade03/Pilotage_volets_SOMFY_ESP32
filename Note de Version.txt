@@ -1,3 +1,8 @@
+V1.5
+Ajout gestion DuckDNS pour la mise à jour de l'IP :
+- Quand il y a connexion au Wifi
+- Une fois par jour
+
 V1.4 
 Dernière correction :
 11/07/2025 (Sauvegarde dans le dossier V1.4)

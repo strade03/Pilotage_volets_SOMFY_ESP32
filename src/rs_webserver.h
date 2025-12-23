@@ -14,6 +14,7 @@ void handleCommand(AsyncWebServerRequest *request);
 void handlePrgmList(AsyncWebServerRequest *request);
 void handlePrgmDelete(AsyncWebServerRequest *request);
 void handlePrgmAdd(AsyncWebServerRequest *request);
+void handleDuckDNS(AsyncWebServerRequest *request);
 
 void get_obfuscated_url(char * url, char * key, char * baseurl);
 void redirect(AsyncWebServerRequest *request, char * url);

@@ -3,7 +3,7 @@
 
 #include "Arduino.h"
 
-#define VERSION "V1.0"
+#define VERSION "Version 1.5"
 
 void write_output_ln(String message);
 void wifiblink(void);

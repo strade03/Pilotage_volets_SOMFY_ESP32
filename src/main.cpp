@@ -9,6 +9,7 @@
 #include "rs_scheduledtasks.h"
 #include "prgm.h"
 #include "SomfyRTS.h"
+#include "rs_duckdns.h"
 
 // Variables pour la logique de reconnexion automatique
 const unsigned long initial_retry_interval = 120000UL; // 2 minutes en millisecondes
@@ -50,8 +51,19 @@ void post_wifi_connect_setup() {
       enable_initMeteoTask(); 
     }
     
+    // Mise à jour DuckDNS si configuré
+    if (is_duckdns_configured()) {
+      write_output_ln("Mise à jour DuckDNS...");
+      update_duckdns();
+    }
+
     // Tâches récurrentes à lancer en mode connecté
     enable_initTimeTask(); // Initialise de temps en temps l'heure
+
+   // Active la tâche planifiée DuckDNS
+    if (is_duckdns_configured()) {
+      enable_initDuckDNSTask();
+    }
 
     // Si la LED clignotait (cas d'une reconnexion depuis AUTO_RESCUE), on l'arrête
     disable_wifiBlinkTask(); 
@@ -110,6 +122,11 @@ void setup() {
   prefs_loadprgms(); 
   refresh_programTask(); // Lance les tâches des programmes
 
+  // Active la tâche DuckDNS si on est connecté dès le démarrage
+  if (current_mode == WIFI_OK && is_duckdns_configured()) {
+    enable_initDuckDNSTask();
+  }
+
   write_output_ln("End setup function");
 
 // // Si bug pour effacer tous les enregistrements des telecommandes.
@@ -154,9 +171,15 @@ void loop() {
           write_output_ln("Reconnexion réussie ! Passage en mode normal.");
           current_mode = WIFI_OK;
           rescue_mode = 0;
-          post_wifi_connect_setup(); // Finalise l'initialisation
+
+          post_wifi_connect_setup(); // Finalise l'initialisation / Ceci appellera aussi update_duckdns()
           ws_config(rescue_mode); 
           retry_interval = initial_retry_interval; // Réinitialise l'intervalle d'attente
+          // Active la tâche planifiée DuckDNS après reconnexion
+          if (is_duckdns_configured()) {
+            enable_initDuckDNSTask();
+          }
+
         } else {
           write_output_ln("Échec de la reconnexion. Redémarrage du mode AP.");
           start_softap(); // Redémarre le mode AP

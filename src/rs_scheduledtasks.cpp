@@ -7,6 +7,7 @@
 #include "rs_time.h"
 #include "rs_wifi.h"
 #include "misc.h"
+#include "rs_duckdns.h"
 
 // Timer/Scheduler
 Scheduler runner;
@@ -23,7 +24,26 @@ Task initTimeTask(24 * TASK_HOUR, TASK_FOREVER, &inittimeTask, &runner, false);
 // Lecture de la méteo toutes les heures
 Task initMeteoTask( TASK_HOUR, TASK_FOREVER, &initmeteoTask, &runner, false);
 
+// Mise à jour Duckdns (mise à jour toutes les 24h) :
+Task initDuckDNSTask(24 * TASK_HOUR, TASK_FOREVER, &initDuckDNSTask_callback, &runner, false);
+
 // TODO ajouter une Task de reboot ESP.restart(); 
+
+// Gestion DuckDns
+void initDuckDNSTask_callback(void) {
+  if (is_duckdns_configured()) {
+    write_output_ln("TASK - Mise à jour DuckDNS périodique");
+    update_duckdns();
+  }
+}
+
+void enable_initDuckDNSTask(void) {
+  initDuckDNSTask.enable();
+}
+
+void disable_initDuckDNSTask(void) {
+  initDuckDNSTask.disable();
+}
 
 void checkTriggerProgram(){
 

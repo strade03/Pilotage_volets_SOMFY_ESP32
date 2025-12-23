@@ -13,6 +13,7 @@
 #include "SomfyRTS.h"
 #include "rs_wifi.h"
 #include "wake_on_lan.h"
+#include "rs_duckdns.h"
 
 char key[10];
 char token[16]; // Token pour valider l'appel de l'API
@@ -124,8 +125,11 @@ void handleMain(AsyncWebServerRequest *request) {
   prefs_get_str("wol","adr_mac",adr_mac,20,"");
   prefs_get_str("wol","ip_serve",ip_serve,18,"");
   //if (rescue_mode==1) {
-  page+=R"rawliteral(<header class="w3-container w3-card w3-theme">
+  page+=R"rawliteral(<header class="w3-card w3-theme" style="display:flex; justify-content:space-between; align-items:center; padding: 0 16px;">
   <h1>Gestion Volets Roulants</h1>
+  <span class="w3-medium">)rawliteral";
+  page += VERSION; 
+  page += R"rawliteral(</span>
   </header>
   <div class="w3-container" style="margin-bottom:50px">
   <br/>
@@ -205,6 +209,7 @@ void handleConfig(AsyncWebServerRequest *request) {
   <a href="clock" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Heure</a><br>
   <a href="application" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Options avancées</a><br>
   <a href="wol" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Option Wake On Lan</a><br>
+  <a href="duckdns" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Configuration DuckDNS</a><br>
   <br>)rawliteral";
   page+=R"rawliteral(<a href="debug" class="w3-button w3-teal w3-xxlarge w3-round-large w3-block">Mode debug telecommande</a><br>
   <br>)rawliteral";
@@ -1323,6 +1328,95 @@ void handleActionWOL(AsyncWebServerRequest *request) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
+// Page paramètres DuckDNS
+//------------------------------------------------------------------------------------------------------------------------------------
+void handleDuckDNS(AsyncWebServerRequest *request) {
+  identification(request);
+  write_output_ln("WEBSERVER - handleDuckDNS - Serving DuckDNS page");
+
+  if (request->method() == HTTP_POST) {
+    if(request->hasArg("domain")){
+      String domain = request->arg("domain");
+      write_output_ln("WEBSERVER - handleDuckDNS - Storing domain : " + domain);
+      prefs_set_str("duckdns","domain",domain);
+    }
+
+    if(request->hasArg("token")){
+      String token_arg = request->arg("token");
+      write_output_ln("WEBSERVER - handleDuckDNS - Storing token");
+      prefs_set_str("duckdns","token",token_arg);
+    }
+
+    // Test de mise à jour immédiat
+    if (request->hasArg("test")) {
+      update_duckdns();
+    }
+
+    redirect(request, (char*)"/config");
+    return;
+  }
+
+  // GET Method
+  if (request->method() == HTTP_GET) {
+    char domain[DUCKDNS_DOMAIN_LENGTH];
+    char token[DUCKDNS_TOKEN_LENGTH];
+    prefs_get_str("duckdns","domain",domain,DUCKDNS_DOMAIN_LENGTH,"");
+    prefs_get_str("duckdns","token",token,DUCKDNS_TOKEN_LENGTH,"");
+    
+    long last_update = prefs_get_long("duckdns","last_update",0);
+    String last_update_str = "Jamais";
+    if (last_update > 0) {
+      unsigned long seconds_ago = (millis() / 1000) - last_update;
+      if (seconds_ago < 3600) {
+        last_update_str = String(seconds_ago / 60) + " minutes";
+      } else if (seconds_ago < 86400) {
+        last_update_str = String(seconds_ago / 3600) + " heures";
+      } else {
+        last_update_str = String(seconds_ago / 86400) + " jours";
+      }
+    }
+
+    String page;
+    page = HEADER ;
+    if (internet_ok==true)
+        page= page + STYLE_w3 + HEADER_close;
+    else
+        page= page + STYLE_w3_light + HEADER_close;
+
+    page+= "<header class=\"w3-container w3-card w3-theme\">\
+            <h1>Configuration DuckDNS</h1>\
+            </header>\
+            <p class=\"w3-text-grey\">Service de mise à jour de l'adresse IP dynamique liée au domaine DuckDNS</p>\
+            <div class=\"w3-container\">\
+            <form action=\"duckdns\" method=\"post\">\
+              <p>\
+              <label class=\"w3-text-teal w3-xxlarge\"><b>Domaine (sans .duckdns.org)</b></label>\
+              <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"domain\" name=\"domain\" type=\"text\" value=\"" + String(domain) + "\" placeholder=\"mondomaine\"></p>\
+            <p>\
+              <label class=\"w3-text-teal w3-xxlarge\"><b>Token DuckDNS</b></label>\
+              <input class=\"w3-input w3-border w3-light-grey w3-xxlarge\" id=\"token\" name=\"token\" type=\"text\" value=\"" + String(token) + "\" placeholder=\"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"></p>\
+            <br>\
+            <p class=\"w3-text-grey\"><i>Dernière mise à jour : " + last_update_str + "</i></p>\
+            <input type=\"submit\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\" value=\"Enregistrer\">\
+            </form>\
+            <br/>\
+            <form action=\"duckdns\" method=\"post\">\
+            <input type=\"hidden\" name=\"test\" value=\"1\">\
+            <input type=\"submit\" class=\"w3-button w3-blue w3-xxlarge w3-round-large w3-block\" value=\"Tester maintenant\">\
+            </form>\
+            <br/>\
+            <a href=\"config\" class=\"w3-button w3-teal w3-xxlarge w3-round-large w3-block\">Retour</a>";
+    
+    page+=baspage();
+    page+=FOOTER;
+
+    request->send(200, "text/html", page);
+    return;
+  }
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------------
 // Page Horloge  Synchronysation 
 //------------------------------------------------------------------------------------------------------------------------------------
 void handleClock(AsyncWebServerRequest *request) {
@@ -1600,6 +1694,8 @@ void ws_config(int rescue_mode) {
   server.on(url, handleWOL);
   get_obfuscated_url(url, key, (char*)"/actionwol");
   server.on(url, handleActionWOL);
+  get_obfuscated_url(url, key, (char*)"/duckdns");
+  server.on(url, handleDuckDNS); 
   get_obfuscated_url(url, key, (char*)"/securite");
   server.on(url, handleSecurite);
   get_obfuscated_url(url, key, (char*)"/application");  // adresse d'une application externe => c'est ici que l'on mettra les pramètrage lien sur le site
